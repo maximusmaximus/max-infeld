@@ -2,9 +2,13 @@ node_modules
 dist
 .output
 .vinxi
+.vercel
+.grok
 .env
 .env.*
 artifacts
 screenshots
 *.log
 .DS_Store
+.node_modules.lock
+.project_id
