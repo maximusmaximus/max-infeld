@@ -1,0 +1,10 @@
+node_modules
+dist
+.output
+.vinxi
+.env
+.env.*
+artifacts
+screenshots
+*.log
+.DS_Store
