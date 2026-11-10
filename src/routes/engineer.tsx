@@ -19,19 +19,19 @@ function Engineer() {
   const events = feed.posts.filter((p) => p.source === "github").slice(0, 8);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-wider text-subtle">Engineer</p>
-      <DisplayTitle as="h1" className="mt-3 max-w-3xl text-3xl tracking-tight">
+      <DisplayTitle as="h1" className="mt-3 max-w-3xl text-2xl tracking-tight sm:text-3xl">
         Tools first, then communities. Software as a way to keep people in the same room.
       </DisplayTitle>
-      <p className="mt-6 max-w-2xl text-muted">
+      <p className="mt-4 max-w-2xl text-sm text-muted sm:mt-6 sm:text-base">
         Max writes the systems that his art and type need: public ledgers in 2007, color-font build
         pipelines, DAC toolkits on EOS, product for Alien Worlds, agent fleets and coworking software
         now. The engineering is not a second career. It is how the social work scales.
       </p>
-      <ConnectButtons className="mt-8 flex flex-wrap gap-3" />
+      <ConnectButtons className="mt-6 flex flex-wrap gap-3 sm:mt-8" />
 
-      <section className="mt-12 grid gap-4 md:grid-cols-3">
+      <section className="mt-8 grid gap-4 sm:mt-12 md:grid-cols-3">
         <Role
           year="2007–"
           title="Public ledgers"
@@ -49,31 +49,32 @@ function Engineer() {
         />
       </section>
 
-      <div className="-mx-4 mt-12 sm:-mx-6">
+      <div className="-mx-4 mt-8 sm:-mx-6 sm:mt-12">
         <AlienWorldsBanner />
       </div>
-      <section className="mt-12">
-        <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Live tools</p>
+      <section className="mt-8 sm:mt-12">
+        <p className="mb-3 font-mono sm:mb-6 text-xs uppercase tracking-wider text-subtle">Live tools</p>
         <ProjectBanners section="tools-agents" framed />
       </section>
-      <section className="mt-12">
-        <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Other sites</p>
+      <section className="mt-8 sm:mt-12">
+        <p className="mb-3 font-mono sm:mb-6 text-xs uppercase tracking-wider text-subtle">Other sites</p>
         <ProjectBanners section="other-sites" framed />
       </section>
       <div className="mt-6">
         <GithubBanner framed />
       </div>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <div className="flex items-end justify-between gap-4">
           <DisplayTitle className="text-2xl tracking-tight">Repositories, live</DisplayTitle>
           <a
             href="https://github.com/maximusmaximus"
             target="_blank"
             rel="noreferrer"
-            className="text-sm text-muted hover:text-fg"
+            className="shrink-0 text-sm text-muted hover:text-fg"
           >
-            github.com/maximusmaximus
+            <span className="sm:hidden">GitHub</span>
+            <span className="hidden sm:inline">github.com/maximusmaximus</span>
           </a>
         </div>
         <ul className="mt-6 grid gap-2 sm:grid-cols-2">
@@ -102,7 +103,7 @@ function Engineer() {
         </ul>
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <DisplayTitle className="text-2xl tracking-tight">Public activity</DisplayTitle>
         <p className="mt-2 mb-5 text-sm text-muted">GitHub events, fetched on load.</p>
         <FeedList items={events} />
@@ -116,7 +117,7 @@ function Role({ year, title, body }: { year: string; title: string; body: string
     <article className="rounded-xl border border-border bg-surface p-5">
       <p className="font-mono text-xs uppercase tracking-wider text-subtle">{year}</p>
       <h2 className={cn("mt-3 text-2xl tracking-tight", displayFontClass(title))}>{title}</h2>
-      <p className="mt-3 text-sm text-muted">{body}</p>
+      <p className="mt-3 line-clamp-3 text-sm text-muted sm:line-clamp-none">{body}</p>
     </article>
   );
 }

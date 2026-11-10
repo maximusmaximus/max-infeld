@@ -21,7 +21,7 @@ export function GithubBanner({ framed }: { framed?: boolean }) {
           height={256}
         />
       </span>
-      <span className="flex min-w-0 flex-col justify-center gap-2 px-5 py-6 sm:px-8 sm:py-10">
+      <span className="flex min-w-0 flex-col justify-center gap-2 px-4 py-5 sm:px-8 sm:py-10">
         <span className="font-mono text-[10px] uppercase tracking-wider text-white/60 sm:text-xs">Public code</span>
         <span className="font-display text-2xl tracking-tight text-white sm:text-3xl">GitHub</span>
         <span className="max-w-xl text-sm font-semibold text-white/85 sm:text-base">

@@ -26,12 +26,12 @@ function Designer() {
   const blog = feed.posts.filter((p) => p.source === "blog").slice(0, 5);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-wider text-subtle">Designer</p>
-      <DisplayTitle as="h1" className="mt-3 max-w-3xl text-3xl tracking-tight">
+      <DisplayTitle as="h1" className="mt-3 max-w-3xl text-2xl tracking-tight sm:text-3xl">
         Xerographer Fonts — a one-person foundry with a city-scale audience.
       </DisplayTitle>
-      <p className="mt-6 max-w-2xl text-muted">
+      <p className="mt-4 max-w-2xl text-sm text-muted sm:mt-6 sm:text-base">
         Since 2011 Max has released type under the Xerographer name: grunge grotesques, color
         OpenType experiments, hand-cut display faces. Download on DaFont. Contact for commercial
         use licensing.
@@ -46,18 +46,18 @@ function Designer() {
         />
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <FontsGrokBanner framed />
       </section>
       <section className="mt-6">
         <GrokWorksBanners framed ids={["xeroemoji"]} />
       </section>
 
-      <div className="-mx-4 mt-14 sm:-mx-6">
+      <div className="-mx-4 mt-8 sm:-mx-6 sm:mt-14">
         <DafontBanner fonts={fonts} />
       </div>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <div className="flex items-end justify-between gap-4">
           <DisplayTitle className="text-2xl tracking-tight">On the foundry bench</DisplayTitle>
           <a
@@ -91,10 +91,10 @@ function Designer() {
         </ul>
       </section>
 
-      <section className="mt-14 grid gap-10 lg:grid-cols-2">
+      <section className="mt-8 grid gap-8 sm:mt-14 sm:gap-10 lg:grid-cols-2">
         <article>
           <DisplayTitle className="text-2xl tracking-tight">Color fonts, open source</DisplayTitle>
-          <p className="mt-3 text-muted">
+          <p className="mt-3 line-clamp-4 text-sm text-muted sm:line-clamp-none sm:text-base">
             In 2016 the studio published SVG-in-OpenType polychromatic fonts — Multicoloure, Reinebow,
             Freizer, Gradiently — under Creative Commons. They still live on GitHub as working
             specimens of a then-new format.

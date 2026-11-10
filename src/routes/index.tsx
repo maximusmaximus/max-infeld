@@ -38,7 +38,7 @@ function Home() {
   return (
     <main>
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:py-20">
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 sm:gap-10 sm:px-6 sm:py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:py-20">
           <div className="min-w-0">
             <p className="text-sm font-semibold uppercase tracking-wider text-muted">
               Strategy and consulting
@@ -51,11 +51,11 @@ function Home() {
             <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-subtle">
               San Francisco · Chico · Public practice
             </p>
-            <p className="mt-6 max-w-xl text-lg text-muted">
+            <p className="mt-4 max-w-xl text-base text-muted sm:mt-6 sm:text-lg">
               {PROFILE.tagline} Type used by millions. The first art show on Ethereum. Software for
               communities that actually gather.
             </p>
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <ConnectButtons />
             </div>
           </div>
@@ -80,7 +80,7 @@ function Home() {
       <section className="border-b border-border">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-border sm:grid-cols-4">
           {stats.map((s) => (
-            <div key={s.v} className="min-w-0 bg-bg px-4 py-6 sm:px-6">
+            <div key={s.v} className="min-w-0 bg-bg px-3 py-4 sm:px-6 sm:py-6">
               <p className="font-sans text-2xl font-bold tabular-nums tracking-tight">{s.k}</p>
               <p className="mt-1 text-sm text-muted">{s.v}</p>
             </div>
@@ -95,19 +95,19 @@ function Home() {
         tags={feed.flickr?.tags ?? []}
       />
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-16">
         <p className="font-mono text-xs uppercase tracking-wider text-subtle">Practice</p>
         <ul className="mt-6 grid gap-4 md:grid-cols-3">
           {PRACTICES.map((p) => (
             <li key={p.to}>
               <Link
                 to={p.to}
-                className="group flex h-full flex-col rounded-xl border border-border bg-surface p-6 transition-colors duration-150 hover:border-line"
+                className="group flex h-full flex-col rounded-xl border border-border bg-surface p-4 transition-colors duration-150 hover:border-line sm:p-6"
               >
                 <span className="font-mono text-xs text-subtle">{p.kicker}</span>
-                <h2 className="mt-4 font-display text-3xl tracking-tight">{p.title}</h2>
-                <p className="mt-3 flex-1 text-sm text-muted">{p.lede}</p>
-                <span className="mt-6 inline-flex items-center gap-2 text-sm text-fg">
+                <h2 className="mt-3 font-display text-2xl tracking-tight sm:mt-4 sm:text-3xl">{p.title}</h2>
+                <p className="mt-3 line-clamp-2 flex-1 text-sm text-muted sm:line-clamp-none">{p.lede}</p>
+                <span className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-fg sm:mt-6">
                   Enter
                   <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5" />
                 </span>
@@ -122,13 +122,13 @@ function Home() {
       <DafontBanner fonts={fonts} />
       <FontsGrokBanner />
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
         <MarisolShelf />
       </section>
 
       <ChristiesBanner />
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
         <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Xerographer Media</p>
         <VoidrideAlbum playlists={feed.voidride} />
       </section>
@@ -138,17 +138,17 @@ function Home() {
       <GithubBanner />
 
       <section className="border-y border-border bg-surface">
-        <blockquote className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-16">
-          <p className="font-sans text-xl italic leading-snug sm:text-2xl">“{QUOTE.text}”</p>
+        <blockquote className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-16">
+          <p className="font-sans text-lg italic leading-snug sm:text-2xl">“{QUOTE.text}”</p>
           <footer className="mt-6 font-mono text-xs uppercase tracking-wider text-subtle">{QUOTE.attrib}</footer>
         </blockquote>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-14">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-wider text-subtle">Now</p>
-            <h2 className="mt-2 font-display text-3xl tracking-tight">Latest from public sources</h2>
+            <h2 className="mt-2 font-display text-2xl tracking-tight sm:text-3xl">Latest from public sources</h2>
           </div>
           <Link to="/feed" className="hidden text-sm text-muted hover:text-fg sm:inline">
             Full live feed

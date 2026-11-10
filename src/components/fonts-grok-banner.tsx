@@ -21,21 +21,21 @@ export function FontsGrokBanner({ framed }: { framed?: boolean }) {
       )}
     >
       <div className="grid md:grid-cols-[minmax(0,22rem)_1fr]">
-        <div className="flex min-w-0 flex-col justify-center p-5 sm:p-8">
+        <div className="flex min-w-0 flex-col justify-center p-4 sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-mono text-xs uppercase tracking-wider text-subtle">Live catalog</p>
             {showBadge ? <Badge className="border-border bg-accent text-accent-fg">Recently updated</Badge> : null}
           </div>
-          <DisplayTitle className="mt-2 text-3xl tracking-tight">Xerographer Fonts</DisplayTitle>
+          <DisplayTitle className="mt-2 text-2xl tracking-tight sm:text-3xl">Xerographer Fonts</DisplayTitle>
           <p className="mt-3 max-w-sm text-sm text-muted">
             Explore 1,376 faces, test custom text, and license unlimited commercial use via x402.
           </p>
           {recent.length > 0 && range ? (
-            <p className="mt-3 max-w-sm text-sm text-fg">
+            <p className="mt-3 hidden max-w-sm text-sm text-fg sm:block">
               {recent.length} faces updated on DaFont, {range}.
             </p>
           ) : null}
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <Button asChild>
               <a href="https://fonts.grok.me/" target="_blank" rel="noreferrer">
                 fonts.grok.me
@@ -63,7 +63,7 @@ export function FontsGrokBanner({ framed }: { framed?: boolean }) {
           </span>
         </a>
       </div>
-      <ul className="grid grid-cols-2 gap-px border-t border-border bg-border sm:grid-cols-4">
+      <ul className="hidden grid-cols-2 gap-px border-t border-border bg-border sm:grid sm:grid-cols-4">
         {SPECIMEN.map((s) => (
           <li key={s} className="bg-bg px-3 py-4 text-center">
             <p className="font-display text-xl tracking-tight sm:text-2xl">{s}</p>

@@ -10,18 +10,18 @@ export function McclawBanner({ framed, badge }: { framed?: boolean; badge?: Reac
       rel="noreferrer"
       className={cn(
         "group relative block overflow-hidden bg-black",
-        framed ? "mt-12 rounded-xl border border-border" : "border-y border-border",
+        framed ? "rounded-xl border border-border" : "border-y border-border",
       )}
     >
       <img
         src="/banners/mcclaw-2.webp"
         alt="McClaw"
-        className="aspect-[3/2] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[1972/700]"
+        className="aspect-[16/10] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[1972/700]"
         width={1972}
         height={700}
       />
       <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/10" />
-      <span className="absolute inset-0 flex flex-col justify-end gap-3 px-4 py-6 sm:px-8 sm:py-10">
+      <span className="absolute inset-0 flex flex-col justify-end gap-2 px-4 py-4 sm:gap-3 sm:px-8 sm:py-10">
         <span className="flex flex-wrap items-center gap-3 sm:gap-4">
           <img
             src="/media/mcclaw-logo400.png"
@@ -48,7 +48,7 @@ export function McclawBanner({ framed, badge }: { framed?: boolean; badge?: Reac
           />
         </span>
         {badge ? <span className="self-start">{badge}</span> : null}
-        <span className="max-w-xl text-sm font-semibold text-white sm:text-base">
+        <span className="line-clamp-2 max-w-xl text-sm font-semibold text-white sm:line-clamp-none sm:text-base">
           AI agents hiring humans. Marketplace on Base, powered by $MCLAW.
         </span>
         <span className="inline-flex items-center gap-2 text-sm text-white/80">

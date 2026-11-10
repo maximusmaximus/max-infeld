@@ -36,7 +36,7 @@ export function FoundFlyers() {
           <p className="font-mono text-xs uppercase tracking-wider text-subtle">
             Available book · {FOUND_FLYERS.year}
           </p>
-          <DisplayTitle className="mt-2 text-3xl tracking-tight">{FOUND_FLYERS.title}</DisplayTitle>
+          <DisplayTitle className="mt-2 text-2xl tracking-tight sm:text-3xl">{FOUND_FLYERS.title}</DisplayTitle>
           <p className="mt-3 max-w-xl text-sm text-muted">{FOUND_FLYERS.blurb}</p>
           <p className="mt-2 font-mono text-xs text-subtle">
             {FOUND_FLYERS.pages} pages · {FOUND_FLYERS.format} · {FOUND_FLYERS.price}
@@ -80,7 +80,7 @@ export function FoundFlyers() {
         <div className="bg-raised px-4 pb-6 sm:px-6">
           <article
             className={cn(
-              "grain relative mx-auto flex min-h-[28rem] max-w-xl flex-col justify-center px-8 py-10 text-center sm:min-h-[34rem] sm:px-12",
+              "grain relative mx-auto flex min-h-[22rem] max-w-xl flex-col justify-center px-6 py-8 text-center sm:min-h-[34rem] sm:px-12 sm:py-10",
               PAPER[page.paper],
             )}
           >

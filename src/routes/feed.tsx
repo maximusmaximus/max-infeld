@@ -42,12 +42,12 @@ function FeedPage() {
   );
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-16">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-subtle">Live sources</p>
-          <h1 className="mt-2 font-display text-3xl tracking-tight">What Max is publishing right now</h1>
-          <p className="mt-3 max-w-xl text-sm text-muted">
+          <h1 className="mt-2 font-display text-2xl tracking-tight sm:text-3xl">What Max is publishing right now</h1>
+          <p className="mt-3 line-clamp-3 max-w-xl text-sm text-muted sm:line-clamp-none">
             This page pulls X, GitHub, DaFont, the Xerographer blog, and YouTube on the server when
             you open it — then refreshes in the background. No screenshots of a feed. The sources
             themselves.

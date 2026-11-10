@@ -128,7 +128,7 @@ export function FlickrExplorer({
 
   return (
     <section id="flickr" className="scroll-mt-16 border-y border-border">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Flickr · maximusmaximus</p>
@@ -144,11 +144,12 @@ export function FlickrExplorer({
             rel="noreferrer"
             className="inline-flex min-h-11 items-center text-sm font-semibold text-fg"
           >
-            flickr.com/photos/maximusmaximus
+            <span className="sm:hidden">View on Flickr</span>
+            <span className="hidden sm:inline">flickr.com/photos/maximusmaximus</span>
           </a>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 sm:gap-x-4">
+        <div className="mt-4 hidden flex-wrap items-baseline gap-x-3 gap-y-1 sm:mt-6 sm:flex sm:gap-x-4">
           <button
             type="button"
             onClick={() => pickTag(null)}
@@ -182,6 +183,31 @@ export function FlickrExplorer({
             );
           })}
         </div>
+        <div className="mt-4 flex flex-wrap items-center gap-2 sm:hidden">
+          <button
+            type="button"
+            onClick={() => pickTag(null)}
+            className={cn(
+              "min-h-11 rounded-sm px-2.5 text-sm font-semibold",
+              tag === null ? "bg-accent text-accent-fg" : "border border-border text-muted",
+            )}
+          >
+            Random
+          </button>
+          {cloud.slice(0, 8).map((t) => (
+            <button
+              key={t.name}
+              type="button"
+              onClick={() => pickTag(t.name)}
+              className={cn(
+                "min-h-11 max-w-[9.5rem] truncate rounded-sm border px-2.5 text-sm",
+                tag === t.name ? "border-accent bg-accent font-semibold text-accent-fg" : "border-border text-muted",
+              )}
+            >
+              {t.name}
+            </button>
+          ))}
+        </div>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
@@ -194,7 +220,7 @@ export function FlickrExplorer({
             aria-label="Search Flickr tags"
             className="h-11 w-full rounded-md border border-border bg-bg px-3 text-sm text-fg outline-none placeholder:text-subtle focus:border-accent sm:max-w-xs"
           />
-          <div className="flex gap-1 overflow-x-auto pb-1">
+          <div className="flex min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain pb-1">
             <button
               type="button"
               onClick={() => {
@@ -310,7 +336,7 @@ export function FlickrExplorer({
                 {tag ? `#${tag}` : "Random haul"}
                 {frames.length ? ` · ${active + 1}/${frames.length}` : busy ? " · drawing…" : ""}
               </p>
-              <h3 className={cn("mt-2 text-xl tracking-tight", displayFontClass(current?.title ?? "Flickr"))}>
+              <h3 className={cn("mt-2 line-clamp-2 text-xl tracking-tight sm:line-clamp-none", displayFontClass(current?.title ?? "Flickr"))}>
                 {current?.title ?? "Flickr photostream"}
               </h3>
               <p className="mt-2 text-sm text-muted">
@@ -318,7 +344,7 @@ export function FlickrExplorer({
                 {current?.views ? ` · ${formatCompact(current.views)} views` : ""}
               </p>
               {photoTags.length ? (
-                <div className="mt-4 flex flex-wrap gap-1.5">
+                <div className="mt-4 flex max-h-24 flex-wrap gap-1.5 overflow-hidden sm:max-h-none">
                   {photoTags.map((name) => (
                     <button
                       key={name}
@@ -389,7 +415,7 @@ export function FlickrExplorer({
                 )}
                 aria-label={p.title}
               >
-                <img src={p.thumb} alt="" className="h-full w-full object-cover" loading="lazy" />
+                <img src={p.thumb} alt="" className="h-full w-full object-cover" loading="eager" />
               </button>
             </li>
           ))}

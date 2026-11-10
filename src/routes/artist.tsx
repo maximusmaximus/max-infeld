@@ -18,12 +18,12 @@ export const Route = createFileRoute("/artist")({
 function Artist() {
   const playlists = Route.useLoaderData();
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-wider text-subtle">Artist</p>
-      <DisplayTitle as="h1" className="mt-3 max-w-3xl text-3xl tracking-tight">
+      <DisplayTitle as="h1" className="mt-3 max-w-3xl text-2xl tracking-tight sm:text-3xl">
         Socially distributed art — work that only exists when other people pick it up.
       </DisplayTitle>
-      <p className="mt-6 max-w-2xl text-muted">
+      <p className="mt-4 max-w-2xl text-sm text-muted sm:mt-6 sm:text-base">
         Max trained as a printmaker and social-practice artist at Chico State after walking away from
         sterile computer science. The through-line is interaction: scavenger hunts, gift currencies,
         collaborative production lines, and NFTs that are receipts for physical, communal objects.
@@ -40,14 +40,14 @@ function Artist() {
         </figcaption>
       </figure>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <VmuBook />
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <article>
           <DisplayTitle className="text-2xl tracking-tight">Marisol Vengas</DisplayTitle>
-          <p className="mt-3 text-muted">
+          <p className="mt-3 line-clamp-4 text-sm text-muted sm:line-clamp-none sm:text-base">
             A studio alias, not a disguise. Under this name Max ran a high-frequency production method:
             scripts pulling thousands of building photographs, cheap foamcore instead of precious
             substrates, friends coloring in a café, acetate branches, duct-tape seals. Art as a crew,
@@ -59,15 +59,15 @@ function Artist() {
         </div>
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <MarisolShelf />
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <FoundFlyers />
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <ChristiesBanner framed />
         <p className="mt-4 text-sm text-muted">
           See the collection on{" "}
@@ -87,17 +87,17 @@ function Artist() {
         </p>
       </section>
 
-      <section className="mt-14">
-        <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Live work</p>
+      <section className="mt-8 sm:mt-14">
+        <p className="mb-3 font-mono sm:mb-6 text-xs uppercase tracking-wider text-subtle">Live work</p>
         <GrokWorksBanners framed />
       </section>
 
-      <section className="mt-14">
-        <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Xerographer Media</p>
+      <section className="mt-8 sm:mt-14">
+        <p className="mb-3 font-mono sm:mb-6 text-xs uppercase tracking-wider text-subtle">Xerographer Media</p>
         <VoidrideAlbum playlists={playlists} />
       </section>
 
-      <section className="mt-14">
+      <section className="mt-8 sm:mt-14">
         <DisplayTitle className="text-2xl tracking-tight">In conversation</DisplayTitle>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">
           {TALKS.map((t) => (

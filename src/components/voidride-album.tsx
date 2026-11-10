@@ -89,9 +89,9 @@ export function VoidrideAlbum({ playlists }: { playlists?: VoidridePlaylist[] })
         </a>
         <div className="flex min-w-0 flex-col p-5 sm:p-6">
           <p className="font-mono text-xs uppercase tracking-wider text-subtle">{album.released}</p>
-          <DisplayTitle className="mt-2 text-3xl tracking-tight">{VOIDRIDE.artist}</DisplayTitle>
+          <DisplayTitle className="mt-2 text-2xl tracking-tight sm:text-3xl">{VOIDRIDE.artist}</DisplayTitle>
           <p className={cn("mt-1 text-lg text-muted", displayFontClass(album.title))}>{album.title}</p>
-          <p className="mt-3 line-clamp-3 max-w-xl text-sm text-muted">{album.blurb}</p>
+          <p className="mt-3 line-clamp-2 max-w-xl text-sm text-muted sm:line-clamp-3">{album.blurb}</p>
           <ol className="mt-5 divide-y divide-border border-y border-border">
             {album.tracks.map((t, n) => (
               <li key={t.href}>

@@ -48,12 +48,12 @@ export function ProjectCard({ project, framed }: { project: Project; framed?: bo
         <img
           src={project.image}
           alt={project.title}
-          className="aspect-[3/2] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[21/8]"
+          className="aspect-[16/10] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[21/8]"
           width={1200}
           height={630}
         />
       ) : (
-        <span className="block aspect-[3/2] w-full bg-raised sm:aspect-[21/9] lg:aspect-[21/8]" />
+        <span className="block aspect-[16/10] w-full bg-raised sm:aspect-[21/9] lg:aspect-[21/8]" />
       )}
       <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/10" />
       <span className="absolute inset-0 flex flex-col justify-end gap-1.5 px-4 py-4 sm:gap-2 sm:px-8 sm:py-10">
@@ -63,10 +63,10 @@ export function ProjectCard({ project, framed }: { project: Project; framed?: bo
           </span>
           <RecentBadge lastUpdated={project.lastUpdated} light />
         </span>
-        <span className={cn("text-xl tracking-tight text-white sm:text-2xl lg:text-3xl", displayFontClass(project.title))}>
+        <span className={cn("break-words text-xl tracking-tight text-white sm:text-2xl lg:text-3xl", displayFontClass(project.title))}>
           {project.title}
         </span>
-        <span className="line-clamp-3 max-w-xl text-sm font-semibold text-white/90 sm:text-base">
+        <span className="line-clamp-2 max-w-xl text-sm font-semibold text-white/90 sm:line-clamp-3 sm:text-base">
           {project.description}
         </span>
         {project.cta ? (
@@ -104,7 +104,7 @@ export function ProjectBanners({
   if (works.length === 0) return null;
 
   return (
-    <div className={framed ? "space-y-6" : ""}>
+    <div className={framed ? "space-y-3 sm:space-y-6" : ""}>
       {works.map((project) => (
         <ProjectCard key={project.id} project={project} framed={framed} />
       ))}
@@ -132,11 +132,11 @@ export function ProjectSections({
         const works = projectsInSection(section.id, { includeCustom });
         return (
           <section key={section.id}>
-            <div className={cn("mx-auto max-w-6xl px-4 pt-10 pb-4 sm:px-6 sm:pt-12", framed && "px-0")}>
+            <div className={cn("mx-auto max-w-6xl px-4 pt-6 pb-2 sm:px-6 sm:pt-12 sm:pb-4", framed && "px-0")}>
               <p className="font-mono text-xs uppercase tracking-wider text-subtle">{section.kicker}</p>
               <h2 className="mt-2 font-display text-2xl tracking-tight sm:text-3xl">{section.title}</h2>
             </div>
-            <div className={framed ? "space-y-6" : ""}>
+            <div className={framed ? "space-y-3 sm:space-y-6" : ""}>
               {works.map((project) => (
                 <ProjectCard key={project.id} project={project} framed={framed} />
               ))}

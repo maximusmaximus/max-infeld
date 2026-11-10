@@ -8,7 +8,7 @@ export function MarisolShelf() {
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-subtle">Marisol Vengas</p>
-          <DisplayTitle className="mt-2 text-3xl tracking-tight">Blue · Pink · Yellow</DisplayTitle>
+          <DisplayTitle className="mt-2 text-2xl tracking-tight sm:text-3xl">Blue · Pink · Yellow</DisplayTitle>
         </div>
         <a
           href="https://marisolvengas.com/collections/blue-27-pink-28-yellow-29"

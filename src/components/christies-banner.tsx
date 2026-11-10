@@ -64,14 +64,14 @@ export function ChristiesBanner({ framed }: { framed?: boolean }) {
   return (
     <section className={cn(framed ? "overflow-hidden rounded-xl border border-border" : "")}>
       <div className={cn("bg-black text-white", framed ? "" : "border-y border-border")}>
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:items-end">
+        <div className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:gap-8 sm:px-6 sm:py-10 lg:grid-cols-[minmax(0,22rem)_1fr] lg:items-end">
           <div>
             <p className="font-mono text-xs uppercase tracking-wider text-white/60">
               Christie's New York · 1 October 2021
             </p>
             <DisplayTitle className="mt-2 text-3xl text-white sm:text-4xl">CURIO CARDS</DisplayTitle>
             <p className="mt-3 font-sans text-2xl font-bold tracking-tight sm:text-3xl">393 ETH</p>
-            <p className="mt-3 max-w-md text-sm text-white/80">
+            <p className="mt-3 line-clamp-3 max-w-md text-sm text-white/80 sm:line-clamp-none">
               Full set of 30 cards plus misprint 17b. The first collection sold at Christie's with
               live bidding in Ether. Cards 27, 28, and 29 — Blue, Pink, Yellow — are by Marisol
               Vengas.
@@ -85,7 +85,7 @@ export function ChristiesBanner({ framed }: { framed?: boolean }) {
               </Button>
             </div>
           </div>
-          <p className="max-w-xl text-sm text-white/70 lg:pb-1">
+          <p className="hidden max-w-xl text-sm text-white/70 sm:block lg:pb-1">
             Estimate $805,548–$1,127,767. Hammer in the Post-War to Present sale. The same month a
             complete set sold at Sotheby's Natively Digital 1.2: The Collectors.
           </p>
@@ -125,7 +125,7 @@ export function ChristiesBanner({ framed }: { framed?: boolean }) {
           </li>
         </ul>
       </div>
-      <ul className="flex flex-wrap gap-x-4 gap-y-2 border-t border-border bg-surface px-4 py-3 sm:px-6">
+      <ul className="flex flex-wrap gap-x-3 gap-y-1 border-t border-border bg-surface px-4 py-2 sm:gap-x-4 sm:gap-y-2 sm:px-6 sm:py-3">
         {LINKS.map((l) => (
           <li key={l.href}>
             <a

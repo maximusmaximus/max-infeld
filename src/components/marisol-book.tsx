@@ -20,7 +20,7 @@ export function MarisolBook() {
           <p className="font-mono text-xs uppercase tracking-wider text-subtle">
             Available book · {MARISOL_BOOK.year}
           </p>
-          <DisplayTitle className="mt-2 text-3xl tracking-tight">{MARISOL_BOOK.title}</DisplayTitle>
+          <DisplayTitle className="mt-2 text-2xl tracking-tight sm:text-3xl">{MARISOL_BOOK.title}</DisplayTitle>
           <p className="mt-3 max-w-xl text-sm text-muted">{MARISOL_BOOK.blurb}</p>
           <p className="mt-2 font-mono text-xs text-subtle">
             {MARISOL_BOOK.pages} pages · {MARISOL_BOOK.format} · {MARISOL_BOOK.price}

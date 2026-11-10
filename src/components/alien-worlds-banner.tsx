@@ -11,12 +11,12 @@ export function AlienWorldsBanner() {
       <img
         src="/media/aw-hero.jpg"
         alt="Alien Worlds space terrain"
-        className="aspect-[3/2] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[21/8]"
+        className="aspect-[16/10] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[21/8]"
         width={1598}
         height={900}
       />
       <span className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-black/15" />
-      <span className="absolute inset-0 flex flex-col justify-end gap-3 px-4 py-6 sm:px-8 sm:py-10">
+      <span className="absolute inset-0 flex flex-col justify-end gap-2 px-4 py-4 sm:gap-3 sm:px-8 sm:py-10">
         <img
           src="/media/aw-logo.png"
           alt="Alien Worlds"
@@ -25,7 +25,7 @@ export function AlienWorldsBanner() {
           height={252}
         />
         <span className="font-mono text-xs uppercase tracking-wider text-white/70">2021–2024</span>
-        <span className="max-w-xl text-sm font-semibold text-white sm:text-base">
+        <span className="line-clamp-2 max-w-xl text-sm font-semibold text-white sm:line-clamp-none sm:text-base">
           Product Manager and Strategist — @Dacoco, the maker of alienworlds.io
         </span>
         <span className="inline-flex items-center gap-2 text-sm text-white/80">

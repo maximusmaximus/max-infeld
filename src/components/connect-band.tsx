@@ -6,7 +6,7 @@ import { DisplayTitle } from "@/components/display-title";
 export function ConnectBand() {
   return (
     <section className="border-y border-border bg-surface">
-      <div className="mx-auto grid max-w-6xl gap-4 px-4 py-10 sm:px-6 sm:py-12 md:grid-cols-2">
+      <div className="mx-auto grid max-w-6xl gap-3 px-4 py-8 sm:gap-4 sm:px-6 sm:py-12 md:grid-cols-2">
         <a
           href={CALENDLY_URL}
           target="_blank"
