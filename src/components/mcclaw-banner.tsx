@@ -15,7 +15,7 @@ export function McclawBanner({ framed }: { framed?: boolean }) {
       <img
         src="/banners/mcclaw-2.webp"
         alt="McClaw"
-        className="aspect-[21/8] h-auto w-full max-w-full object-cover sm:aspect-[1972/700]"
+        className="aspect-[3/2] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[1972/700]"
         width={1972}
         height={700}
       />

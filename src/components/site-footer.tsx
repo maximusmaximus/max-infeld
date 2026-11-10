@@ -4,7 +4,7 @@ import { SOCIALS } from "@/lib/profile";
 
 export function SiteFooter() {
   const primary = SOCIALS.filter((s) =>
-    ["calendly", "linkedin", "x", "flickr", "mcclaw", "culty", "emoji", "ripple", "fonts", "voidride", "github", "dafont", "curio"].includes(s.id),
+    ["calendly", "linkedin", "x", "flickr", "mcclaw", "culty", "emoji", "ripple", "bath", "mv910", "xeroemoji", "fonts", "voidride", "github", "dafont", "curio"].includes(s.id),
   );
 
   return (

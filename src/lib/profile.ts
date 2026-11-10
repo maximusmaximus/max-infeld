@@ -128,6 +128,14 @@ export const SOCIALS: SocialLink[] = [
     group: "work",
   },
   {
+    id: "bath",
+    name: "Lumen Bath",
+    handle: "bath.grok.me",
+    href: "https://bath.grok.me/",
+    blurb: "A crystal singing-bowl sound bath you place, share, and remix.",
+    group: "art",
+  },
+  {
     id: "emoji",
     name: "Emoji Old Masters",
     handle: "emoji.grok.me",
@@ -230,6 +238,22 @@ export const SOCIALS: SocialLink[] = [
     href: "https://marisolvengas.com/collections/blue-27-pink-28-yellow-29",
     blurb: "Studio alias for the Blue / Pink / Yellow series.",
     group: "art",
+  },
+  {
+    id: "mv910",
+    name: "MV910",
+    handle: "marisol.grok.me",
+    href: "https://marisol.grok.me/",
+    blurb: "888 one-of-one buildings. Pick a rough, set the windows, mint.",
+    group: "art",
+  },
+  {
+    id: "xeroemoji",
+    name: "Xero Emoji",
+    handle: "xeroemoji.grok.me",
+    href: "https://xeroemoji.grok.me/",
+    blurb: "A city built from the Xero emoji set. It grows while someone is watching.",
+    group: "type",
   },
   {
     id: "medium",
@@ -542,6 +566,33 @@ export const PROJECT_BANNERS = [
 
 export const GROK_WORKS = [
   {
+    id: "mv910",
+    href: "https://marisol.grok.me/",
+    image: "/media/marisol-og.jpg",
+    kicker: "Marisol Vengas",
+    title: "MV910",
+    lede: "888 one-of-one buildings. Pick a rough, set the windows, mint. The photoreal piece is revealed after it passes a quality check.",
+    cta: "Pick a rough",
+  },
+  {
+    id: "xeroemoji",
+    href: "https://xeroemoji.grok.me/",
+    image: "/media/xeroemoji-og.jpg",
+    kicker: "Xerographer",
+    title: "XERO EMOJI",
+    lede: "A city built from the Xero emoji set. Farms, streets, and camps. It only grows while someone is watching.",
+    cta: "Walk the city",
+  },
+  {
+    id: "bath",
+    href: "https://bath.grok.me/",
+    image: "/media/bath-og.jpg",
+    kicker: "Live work",
+    title: "LUMEN BATH",
+    lede: "A crystal singing-bowl sound bath you place, share, and remix. Turn the ear. Daily baths follow what people play most.",
+    cta: "Place a bowl",
+  },
+  {
     id: "emoji",
     href: "https://emoji.grok.me/",
     image: "/media/emoji-og.jpg",
@@ -556,6 +607,15 @@ export const GROK_WORKS = [
     kicker: "Live work",
     title: "RIPPLE",
     lede: "Full-screen interactive fluid surface. Paint waves, switch presets, layer camera and mic, cast phone-to-wall.",
+  },
+  {
+    id: "flies",
+    href: "https://flies.grok.me/",
+    image: "/media/flies-og.jpg",
+    kicker: "Live work",
+    title: "DROSOCORE",
+    lede: "A hydrogen fusion tokamak maintained and extended by fruit flies. Coil 14 was a discussion.",
+    cta: "Don't swat. They're on shift.",
   },
 ] as const;
 

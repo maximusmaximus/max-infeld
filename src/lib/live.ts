@@ -90,20 +90,43 @@ export type LiveFeed = {
   github: GithubRepo[];
   dafont: DafontStats | null;
   flickr: FlickrFeed | null;
+  voidride: VoidridePlaylist[];
   sourcesOk: SourceId[];
+};
+
+export type VoidrideTrack = {
+  title: string;
+  href: string;
+  art: string;
+  time: string;
+};
+
+export type VoidridePlaylist = {
+  id: string;
+  title: string;
+  href: string;
+  cover: string;
+  released: string;
+  blurb: string;
+  tracks: VoidrideTrack[];
 };
 
 const UA = "MaxInfeldStudio/1.0 (+https://grok.com; public monograph aggregator)";
 const TTL_MS = 30_000;
 let cache: { at: number; data: LiveFeed } | null = null;
 
-async function fetchText(url: string, ms = 8000, accept = "text/html,application/xml,application/json"): Promise<string> {
+async function fetchText(
+  url: string,
+  ms = 8000,
+  accept = "text/html,application/xml,application/json",
+  ua = UA,
+): Promise<string> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
-      headers: { "User-Agent": UA, Accept: accept },
+      headers: { "User-Agent": ua, Accept: accept },
       redirect: "follow",
     });
     if (!res.ok) throw new Error(`${res.status} ${url}`);
@@ -113,8 +136,8 @@ async function fetchText(url: string, ms = 8000, accept = "text/html,application
   }
 }
 
-async function fetchJson<T>(url: string, ms = 8000): Promise<T> {
-  const text = await fetchText(url, ms, "application/json");
+async function fetchJson<T>(url: string, ms = 8000, ua = UA): Promise<T> {
+  const text = await fetchText(url, ms, "application/json", ua);
   return JSON.parse(text) as T;
 }
 
@@ -352,45 +375,18 @@ async function fetchYoutube(): Promise<LiveItem[]> {
   );
 }
 
-const FLICKR_KEY = "57f7bcf7c339a0d7e2c852c919d5c3b0";
-const FLICKR_NSID = "11706974@N08";
 const FLICKR_BLOCK =
   /\b(armpit|porn|spank|breast|nude|nsfw|sex|xxx|x-rated|erotic|naked|fetish|handcuff)\b/i;
 const FLICKR_TAG_SKIP =
   /^(https?|www|httpgoogl\w*|max|infeld|maxinfeld|ep[0-9]+|omd?|f[0-9.]+|cmount|nikkor|nikon|canon|olympusxa|olympus|zuiko|rokkor\w*|minolta|yashica|fuji|navitar|wollensak|raptar|silvernose|preai|nonai|m43|mft|microfourthirds?|dslr|camera|lens|auto|digital|scan|duplicator|transparancy|transparency|bellows|inc|com|org|htm|html|jpg|raw|nr|iso\d*|fstop|sharpglass|telephoto|wideangle|prime)$/i;
-const FLICKR_EXTRAS = "url_l,url_c,url_z,url_m,date_taken,views,media,safety_level,tags";
-
-type FlickrApiPhoto = {
-  id: string;
-  title: string;
-  media?: string;
-  safe?: number | string;
-  safety_level?: number | string;
-  views?: string | number;
-  datetaken?: string;
-  tags?: string;
-  url_l?: string;
-  url_c?: string;
-  url_z?: string;
-  url_m?: string;
-};
-
-type FlickrRest<T> = T & { stat?: string };
-
-function flickrUrl(method: string, params: Record<string, string | number>): string {
-  const q = new URLSearchParams({
-    method,
-    api_key: FLICKR_KEY,
-    format: "json",
-    nojsoncallback: "1",
-  });
-  for (const [k, v] of Object.entries(params)) q.set(k, String(v));
-  return `https://api.flickr.com/services/rest/?${q.toString()}`;
-}
+const FLICKR_UA =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+const FLICKR_PHOTO =
+  "https://www.flickr.com/photos/maximusmaximus/";
 
 export function isFlickrTagUseful(name: string): boolean {
   const t = name.trim().toLowerCase();
-  if (t.length < 3 || t.length > 32) return false;
+  if (t.length < 3 || t.length > 48) return false;
   if (FLICKR_BLOCK.test(t)) return false;
   if (FLICKR_TAG_SKIP.test(t)) return false;
   if (/^\d+$/.test(t)) return false;
@@ -399,17 +395,133 @@ export function isFlickrTagUseful(name: string): boolean {
   return true;
 }
 
-function parsePhotoTags(raw?: string): string[] {
-  if (!raw) return [];
-  const out: string[] = [];
-  const seen = new Set<string>();
-  for (const part of raw.split(/\s+/)) {
-    const t = part.trim().toLowerCase();
-    if (!isFlickrTagUseful(t) || seen.has(t)) continue;
-    seen.add(t);
-    out.push(t);
+function flickrPageUrl(page: number, tag?: string): string {
+  if (tag) {
+    const base = `${FLICKR_PHOTO}tags/${encodeURIComponent(tag)}/`;
+    return page > 1 ? `${base}page${page}` : base;
   }
-  return out.slice(0, 12);
+  return page > 1 ? `${FLICKR_PHOTO}page${page}` : FLICKR_PHOTO;
+}
+
+function unescapeFlickrUrl(raw: string): string {
+  const path = raw.replace(/\\\//g, "/");
+  if (path.startsWith("//")) return `https:${path}`;
+  return path;
+}
+
+function flickrSizeRank(url: string): number {
+  if (/_b\.jpg$/i.test(url)) return 0;
+  if (/_c\.jpg$/i.test(url)) return 1;
+  if (/_z\.jpg$/i.test(url)) return 2;
+  if (!/_[a-z]\.jpg$/i.test(url)) return 3;
+  if (/_w\.jpg$/i.test(url)) return 4;
+  if (/_n\.jpg$/i.test(url)) return 5;
+  if (/_m\.jpg$/i.test(url)) return 6;
+  return 9;
+}
+
+function decodeFlickrString(raw: string): string {
+  try {
+    return JSON.parse(`"${raw}"`) as string;
+  } catch {
+    return raw;
+  }
+}
+
+/** Public photostream HTML. Flickr's REST key is not available to this site. */
+function parseFlickrPhotos(html: string): FlickrPhoto[] {
+  const parts = html.split(/"_flickrModelRegistry":"photo(?:-lite)?-models"/).slice(1);
+  const items: FlickrPhoto[] = [];
+  const seen = new Set<string>();
+  for (const chunk of parts) {
+    const titleM = chunk.match(/"title":"((?:\\.|[^"\\])*)"/);
+    if (!titleM) continue;
+    const title = decodeFlickrString(titleM[1] || "Untitled");
+    if (FLICKR_BLOCK.test(title)) continue;
+    const media = chunk.match(/"mediaType":"([^"]+)"/)?.[1];
+    if (media && media !== "photo") continue;
+    const safety = Number(chunk.match(/"safetyLevel":(\d+)/)?.[1] ?? 0);
+    if (safety >= 1) continue;
+    const urls = [...chunk.matchAll(/displayUrl":"([^"]+)"/g)]
+      .map((m) => unescapeFlickrUrl(m[1] || ""))
+      .filter((u) => u.includes("staticflickr.com") && flickrSizeRank(u) < 9);
+    if (!urls.length) continue;
+    urls.sort((a, b) => flickrSizeRank(a) - flickrSizeRank(b));
+    const large = urls[0]!;
+    const thumb = urls.find((u) => /_z\.jpg$/i.test(u)) || urls.find((u) => /_n\.jpg$/i.test(u)) || large;
+    const id = large.match(/\/(\d{6,})_/)?.[1];
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    const taken = chunk.match(/"dateTaken":"([^"]+)"/)?.[1];
+    const views = chunk.match(/"viewCount":(\d+)/)?.[1];
+    items.push({
+      id,
+      title,
+      thumb,
+      url: large,
+      href: `${FLICKR_PHOTO}${id}/`,
+      views: views ? Number(views) : undefined,
+      taken,
+      tags: [],
+    });
+  }
+  return items;
+}
+
+function hintedPages(html: string): number {
+  const nums = [...html.matchAll(/\/page(\d+)/g)]
+    .map((m) => Number(m[1]))
+    .filter((n) => n > 0 && n < 2000);
+  return nums.length ? Math.max(...nums) : 1;
+}
+
+async function fetchFlickrHtml(page: number, tag?: string): Promise<string> {
+  return fetchText(flickrPageUrl(page, tag), 14000, "text/html", FLICKR_UA);
+}
+
+async function flickrHtmlHaul(tag?: string): Promise<{ items: FlickrPhoto[]; page: number; pages: number }> {
+  const firstHtml = await fetchFlickrHtml(1, tag);
+  const hinted = hintedPages(firstHtml);
+  const cap = tag ? Math.max(hinted, 20) : Math.min(Math.max(hinted, 1), 142);
+  const pick = 1 + Math.floor(Math.random() * cap);
+  let items = parseFlickrPhotos(firstHtml);
+  if (pick !== 1) {
+    try {
+      const more = parseFlickrPhotos(await fetchFlickrHtml(pick, tag));
+      if (more.length) items = more;
+    } catch {
+      /* page 1 already loaded */
+    }
+  }
+  return { items: shuffleInPlace(items).slice(0, 18), page: pick, pages: cap };
+}
+
+type FlickrTagIndex = { at: number; names: string[] };
+let flickrTagIndexCache: FlickrTagIndex | null = null;
+const FLICKR_TAG_PAGE = 72;
+
+async function loadFlickrTagIndex(): Promise<FlickrTagIndex> {
+  const now = Date.now();
+  if (flickrTagIndexCache && now - flickrTagIndexCache.at < 10 * 60 * 1000) return flickrTagIndexCache;
+  const html = await fetchText(`${FLICKR_PHOTO}tags/`, 20000, "text/html", FLICKR_UA);
+  const seen = new Set<string>();
+  const names: string[] = [];
+  for (const m of html.matchAll(/\/photos\/maximusmaximus\/tags\/([^/"?#\s]+)/g)) {
+    let name = m[1] || "";
+    try {
+      name = decodeURIComponent(name);
+    } catch {
+      /* keep raw */
+    }
+    name = name.trim().toLowerCase();
+    if (!name || seen.has(name) || !isFlickrTagUseful(name)) continue;
+    seen.add(name);
+    names.push(name);
+  }
+  names.sort((a, b) => a.localeCompare(b));
+  if (!names.length) throw new Error("flickr tags empty");
+  flickrTagIndexCache = { at: now, names };
+  return flickrTagIndexCache;
 }
 
 function shuffleInPlace<T>(arr: T[]): T[] {
@@ -422,81 +534,69 @@ function shuffleInPlace<T>(arr: T[]): T[] {
   return arr;
 }
 
-function mapFlickrPhoto(p: FlickrApiPhoto): FlickrPhoto | null {
-  if (Number(p.safety_level ?? 0) >= 1) return null;
-  if (p.media && p.media !== "photo") return null;
-  if (FLICKR_BLOCK.test(p.title || "")) return null;
-  const large = p.url_l || p.url_c || p.url_z;
-  const thumb = p.url_c || p.url_z || p.url_m || large;
-  if (!large || !thumb) return null;
-  return {
-    id: p.id,
-    title: p.title || "Untitled",
-    thumb,
-    url: large,
-    href: `https://www.flickr.com/photos/maximusmaximus/${p.id}/`,
-    views: p.views ? Number(p.views) : undefined,
-    taken: p.datetaken,
-    tags: parsePhotoTags(p.tags),
-  };
-}
-
-async function flickrSearch(params: Record<string, string | number>): Promise<{
-  items: FlickrPhoto[];
-  page: number;
-  pages: number;
-}> {
-  const data = await fetchJson<
-    FlickrRest<{ photos?: { photo?: FlickrApiPhoto[]; page?: number; pages?: number } }>
-  >(
-    flickrUrl("flickr.photos.search", {
-      user_id: FLICKR_NSID,
-      extras: FLICKR_EXTRAS,
-      content_type: 1,
-      media: "photos",
-      per_page: 24,
-      ...params,
+export const getFlickrTagBrowse = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      q: z.string().max(48).optional(),
+      letter: z.string().max(2).optional(),
+      page: z.number().int().min(1).max(800).optional(),
     }),
-    9000,
-  );
-  const items = (data.photos?.photo ?? []).map(mapFlickrPhoto).filter((x): x is FlickrPhoto => x !== null);
-  return {
-    items,
-    page: Number(data.photos?.page ?? 1),
-    pages: Number(data.photos?.pages ?? 1),
-  };
-}
+  )
+  .handler(async ({ data }): Promise<{ tags: FlickrTag[]; total: number; page: number; pages: number }> => {
+    const index = await loadFlickrTagIndex();
+    const q = data.q?.trim().toLowerCase() ?? "";
+    const letter = data.letter?.trim().toLowerCase() ?? "";
+    let list = index.names;
+    if (letter === "#") list = list.filter((n) => /^[0-9]/.test(n));
+    else if (letter) list = list.filter((n) => n.startsWith(letter));
+    if (q) list = list.filter((n) => n.includes(q));
+    const total = list.length;
+    const pages = Math.max(1, Math.ceil(total / FLICKR_TAG_PAGE));
+    const page = Math.min(Math.max(1, data.page ?? 1), pages);
+    const start = (page - 1) * FLICKR_TAG_PAGE;
+    return {
+      tags: list.slice(start, start + FLICKR_TAG_PAGE).map((name) => ({
+        name,
+        count: 1,
+      })),
+      total,
+      page,
+      pages,
+    };
+  });
 
-async function flickrRandomHaul(tag?: string): Promise<{ items: FlickrPhoto[]; page: number; pages: number }> {
-  const params: Record<string, string | number> = {
-    sort: tag ? "interestingness-desc" : "date-posted-desc",
-    safe_search: 1,
-  };
-  if (tag) {
-    params.tags = tag;
-    params.tag_mode = "all";
+function tagHash(name: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < name.length; i++) {
+    h ^= name.charCodeAt(i);
+    h = Math.imul(h, 16777619);
   }
-  const first = await flickrSearch({ ...params, page: 1 });
-  const cap = Math.max(1, Math.min(first.pages, 80));
-  const pick = 1 + Math.floor(Math.random() * cap);
-  let haul = pick === 1 ? first : await flickrSearch({ ...params, page: pick });
-  if (!haul.items.length && pick !== 1) haul = first;
-  return { ...haul, items: shuffleInPlace([...haul.items]) };
+  return h >>> 0;
 }
 
-async function fetchFlickrTags(): Promise<FlickrTag[]> {
-  const data = await fetchJson<
-    FlickrRest<{ who?: { tags?: { tag?: { _content?: string; count?: string | number }[] } } }>
-  >(flickrUrl("flickr.tags.getListUserPopular", { user_id: FLICKR_NSID, count: 200 }), 8000);
-  const raw = data.who?.tags?.tag ?? [];
-  return raw
-    .map((t) => ({
-      name: (t._content ?? "").trim().toLowerCase(),
-      count: Number(t.count ?? 0),
-    }))
-    .filter((t) => t.name && t.count > 0 && isFlickrTagUseful(t.name))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 48);
+/** Mix the heaviest tags with a spread of the long tail so the cloud is not just the top hits. */
+export function spreadFlickrTags(tags: FlickrTag[], limit = 64): FlickrTag[] {
+  const seen = new Set<string>();
+  const unique = tags.filter((t) => {
+    if (!t.name || seen.has(t.name) || !isFlickrTagUseful(t.name)) return false;
+    seen.add(t.name);
+    return true;
+  });
+  const ranked = [...unique].sort((a, b) => b.count - a.count);
+  const pool = ranked.length <= limit ? ranked : (() => {
+    const headN = Math.min(16, Math.floor(limit * 0.3));
+    const head = ranked.slice(0, headN);
+    const rest = ranked.slice(headN);
+    const need = limit - head.length;
+    const picked: FlickrTag[] = [];
+    if (rest.length <= need) picked.push(...rest);
+    else {
+      const step = rest.length / need;
+      for (let i = 0; i < need; i++) picked.push(rest[Math.floor(i * step)]!);
+    }
+    return [...head, ...picked];
+  })();
+  return pool.sort((a, b) => tagHash(a.name) - tagHash(b.name));
 }
 
 export function mergeFlickrTags(base: FlickrTag[], photos: FlickrPhoto[]): FlickrTag[] {
@@ -515,50 +615,48 @@ export function mergeFlickrTags(base: FlickrTag[], photos: FlickrPhoto[]): Flick
 }
 
 async function fetchFlickrHome(): Promise<FlickrFeed> {
-  const [info, haul, tags, about] = await Promise.allSettled([
-    fetchJson<
-      FlickrRest<{
-        person?: {
-          photos?: { count?: { _content?: string | number } };
-          coverphoto_url?: { h?: string; l?: string };
-        };
-      }>
-    >(flickrUrl("flickr.people.getInfo", { user_id: FLICKR_NSID }), 8000),
-    flickrRandomHaul(),
-    fetchFlickrTags(),
-    fetchText("https://www.flickr.com/people/maximusmaximus/", 8000),
+  const [stream, about] = await Promise.allSettled([
+    fetchFlickrHtml(1),
+    fetchText("https://www.flickr.com/people/maximusmaximus/", 12000, "text/html", FLICKR_UA),
   ]);
-
-  const person = info.status === "fulfilled" ? info.value.person : undefined;
-  const photos = Number(person?.photos?.count?._content ?? 14136);
-  const cover = person?.coverphoto_url?.h || person?.coverphoto_url?.l;
-  const viewsMatch =
-    about.status === "fulfilled" ? about.value.match(/"totalViews"\s*:\s*(\d+)/) : null;
-  const views = viewsMatch ? Number(viewsMatch[1]) : 1_837_359;
-  const items = haul.status === "fulfilled" ? haul.value.items.slice(0, 16) : [];
-  const tagList = tags.status === "fulfilled" ? tags.value : [];
-  const remoteCover = cover
-    ? (cover.startsWith("//") ? `https:${cover}` : cover).split("#")[0]
-    : undefined;
+  const html = stream.status === "fulfilled" ? stream.value : "";
+  const aboutHtml = about.status === "fulfilled" ? about.value : "";
+  const items = html ? parseFlickrPhotos(html).slice(0, 16) : [];
+  const countMatch = `${html}\n${aboutHtml}`.match(/"photoCount":(\d+)/);
+  const photos = countMatch ? Number(countMatch[1]) : 14136;
+  const viewsMatch = aboutHtml.match(/"totalViews"\s*:\s*(\d+)/);
+  const views = viewsMatch ? Number(viewsMatch[1]) : 1_861_927;
 
   return {
     photos,
     views,
-    cover: remoteCover || "/media/flickr-cover.jpg",
+    cover: items[0]?.url || "/media/flickr-cover.jpg",
     items,
-    pages: haul.status === "fulfilled" ? haul.value.pages : Math.max(1, Math.ceil(photos / 24)),
-    tags: mergeFlickrTags(tagList, items),
+    pages: html ? hintedPages(html) : 1,
+    tags: [],
   };
 }
 
+async function fetchFlickrTags(): Promise<FlickrTag[]> {
+  const index = await loadFlickrTagIndex();
+  return spreadFlickrTags(
+    index.names.map((name) => ({ name, count: 1 })),
+    72,
+  );
+}
+
 export const getFlickrTags = createServerFn({ method: "GET" }).handler(async (): Promise<FlickrTag[]> => {
-  return fetchFlickrTags();
+  try {
+    return await fetchFlickrTags();
+  } catch {
+    return [];
+  }
 });
 
 export const getFlickrPage = createServerFn({ method: "POST" })
   .validator(
     z.object({
-      tag: z.string().max(40).optional(),
+      tag: z.string().max(48).optional(),
       random: z.boolean().optional(),
       page: z.number().int().min(1).max(400).optional(),
     }),
@@ -567,21 +665,22 @@ export const getFlickrPage = createServerFn({ method: "POST" })
     async ({
       data,
     }): Promise<{ items: FlickrPhoto[]; page: number; pages: number; tags: FlickrTag[] }> => {
-      const tag = data.tag?.trim().toLowerCase() || undefined;
-      const haul =
-        data.random || !data.page
-          ? await flickrRandomHaul(tag)
-          : await flickrSearch({
-              page: data.page,
-              sort: "interestingness-desc",
-              ...(tag ? { tags: tag, tag_mode: "all" } : {}),
-            });
-      return {
-        items: haul.items,
-        page: haul.page,
-        pages: haul.pages,
-        tags: mergeFlickrTags([], haul.items).filter((t) => t.fresh),
-      };
+      try {
+        const tag = data.tag?.trim().toLowerCase() || undefined;
+        if (data.page && !data.random) {
+          const html = await fetchFlickrHtml(data.page, tag);
+          return {
+            items: parseFlickrPhotos(html).slice(0, 18),
+            page: data.page,
+            pages: hintedPages(html),
+            tags: [],
+          };
+        }
+        const haul = await flickrHtmlHaul(tag);
+        return { items: haul.items, page: haul.page, pages: haul.pages, tags: [] };
+      } catch {
+        return { items: [], page: 1, pages: 1, tags: [] };
+      }
     },
   );
 
@@ -593,13 +692,14 @@ function emptyFeed(): LiveFeed {
     github: [],
     dafont: null,
     flickr: null,
+    voidride: [],
     sourcesOk: [],
   };
 }
 
 async function assemble(): Promise<LiveFeed> {
   const feed = emptyFeed();
-  const [x, tweets, github, dafont, blog, youtube, flickr] = await Promise.allSettled([
+  const [x, tweets, github, dafont, blog, youtube, flickr, voidride] = await Promise.allSettled([
     fetchXProfile(),
     fetchXPosts(),
     fetchGithub(),
@@ -607,6 +707,7 @@ async function assemble(): Promise<LiveFeed> {
     fetchBlog(),
     fetchYoutube(),
     fetchFlickrHome(),
+    loadVoidride(),
   ]);
 
   if (x.status === "fulfilled" && x.value) {
@@ -647,6 +748,7 @@ async function assemble(): Promise<LiveFeed> {
     feed.flickr = flickr.value;
     feed.sourcesOk.push("flickr");
   }
+  if (voidride.status === "fulfilled") feed.voidride = voidride.value;
 
   feed.sourcesOk = [...new Set(feed.sourcesOk)];
   feed.posts.sort((a, b) => {
@@ -667,5 +769,93 @@ export const getLiveFeed = createServerFn({ method: "GET" }).handler(async (): P
     return data;
   } catch {
     return cache?.data ?? emptyFeed();
+  }
+});
+
+const SC_BROWSER = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36";
+let voidrideCache: { at: number; data: VoidridePlaylist[] } | null = null;
+
+function scArt(url: string | null | undefined): string {
+  if (!url) return "/media/voidride-cover.jpg";
+  return url.replace(/-(large|t\d+x\d+|original|badge|small|tiny|mini)(?=\.)/, "-t500x500");
+}
+
+function scTime(ms: number): string {
+  const sec = Math.max(0, Math.round((ms || 0) / 1000));
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+}
+
+async function fetchVoidridePlaylists(): Promise<VoidridePlaylist[]> {
+  const html = await fetchText("https://soundcloud.com/ridethevoid/sets", 10000, "text/html", SC_BROWSER);
+  const id = html.match(/"hydratable":"apiClient","data":\{"id":"([A-Za-z0-9]+)"/)?.[1];
+  if (!id) throw new Error("soundcloud client id missing");
+  const user = await fetchJson<{ id: number }>(
+    `https://api-v2.soundcloud.com/resolve?url=${encodeURIComponent("https://soundcloud.com/ridethevoid")}&client_id=${id}`,
+    10000,
+    SC_BROWSER,
+  );
+  const sets = await fetchJson<{
+    collection?: {
+      id: number;
+      title?: string;
+      permalink_url?: string;
+      artwork_url?: string | null;
+      created_at?: string;
+      description?: string | null;
+      tracks?: {
+        title?: string;
+        permalink_url?: string;
+        artwork_url?: string | null;
+        duration?: number;
+      }[];
+    }[];
+  }>(
+    `https://api-v2.soundcloud.com/users/${user.id}/playlists?client_id=${id}&limit=50&linked_partitioning=1&representation=full`,
+    14000,
+    SC_BROWSER,
+  );
+  return (sets.collection ?? [])
+    .filter((p) => p.title && p.permalink_url && p.created_at)
+    .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""))
+    .map((p) => {
+      const tracks = (p.tracks ?? [])
+        .filter((t) => t.title && t.permalink_url)
+        .map((t) => ({
+          title: t.title!,
+          href: t.permalink_url!,
+          art: scArt(t.artwork_url || p.artwork_url),
+          time: scTime(t.duration ?? 0),
+        }));
+      const released = new Date(p.created_at!).toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      });
+      return {
+        id: String(p.id),
+        title: p.title!,
+        href: p.permalink_url!,
+        cover: scArt(p.artwork_url),
+        released,
+        blurb: (p.description || "Xerographer Media").replace(/\s+/g, " ").trim(),
+        tracks,
+      };
+    })
+    .filter((p) => p.tracks.length > 0);
+}
+
+export async function loadVoidride(): Promise<VoidridePlaylist[]> {
+  const now = Date.now();
+  if (voidrideCache && now - voidrideCache.at < 60_000) return voidrideCache.data;
+  const data = await fetchVoidridePlaylists();
+  voidrideCache = { at: now, data };
+  return data;
+}
+
+export const getVoidride = createServerFn({ method: "GET" }).handler(async (): Promise<VoidridePlaylist[]> => {
+  try {
+    return await loadVoidride();
+  } catch {
+    return [];
   }
 });

@@ -10,7 +10,7 @@ export function DafontBanner({ fonts }: { fonts: number }) {
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-14 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Xerographer Fonts</p>
-          <h2 className="mt-3 font-display text-4xl">Type for everyone</h2>
+          <h2 className="mt-3 font-display text-3xl sm:text-4xl">Type for everyone</h2>
           <p className="mt-4 max-w-xl text-sm text-muted">
             {fonts.toLocaleString("en-US")} original typefaces. 100M+ downloads. Download on DaFont.
             Contact for commercial use licensing.
@@ -35,8 +35,10 @@ export function DafontBanner({ fonts }: { fonts: number }) {
           </Button>
         ))}
       </div>
-      <div className="overflow-hidden border-t border-border">
-        <p className="whitespace-nowrap px-4 py-6 font-display text-3xl text-fg sm:px-6 sm:text-4xl">{SPECIMEN}</p>
+      <div className="overflow-x-auto border-t border-border">
+        <p className="whitespace-nowrap px-4 py-6 font-display text-[clamp(1.35rem,3.2vw,2.6rem)] leading-none text-fg sm:px-6">
+          {SPECIMEN}
+        </p>
       </div>
     </section>
   );

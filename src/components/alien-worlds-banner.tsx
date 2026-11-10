@@ -11,7 +11,7 @@ export function AlienWorldsBanner() {
       <img
         src="/media/aw-hero.jpg"
         alt="Alien Worlds space terrain"
-        className="aspect-[21/9] h-auto w-full max-w-full object-cover sm:aspect-[21/8]"
+        className="aspect-[3/2] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[21/8]"
         width={1598}
         height={900}
       />

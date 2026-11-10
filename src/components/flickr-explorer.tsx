@@ -3,8 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   getFlickrPage,
+  getFlickrTagBrowse,
   getFlickrTags,
   mergeFlickrTags,
+  spreadFlickrTags,
   type FlickrPhoto,
   type FlickrTag,
 } from "@/lib/live";
@@ -12,12 +14,10 @@ import { cn, displayFontClass, formatCompact } from "@/lib/utils";
 
 export function FlickrExplorer({
   photos,
-  cover,
   items,
   tags: initialTags,
 }: {
   photos: number;
-  cover?: string;
   items: FlickrPhoto[];
   pages: number;
   tags: FlickrTag[];
@@ -28,11 +28,18 @@ export function FlickrExplorer({
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [tag, setTag] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [letter, setLetter] = useState<string | null>(null);
+  const [browsePage, setBrowsePage] = useState(1);
+  const [browsing, setBrowsing] = useState(false);
+  const [browse, setBrowse] = useState<{ tags: FlickrTag[]; total: number; page: number; pages: number } | null>(
+    null,
+  );
 
   const current = frames[active] ?? frames[0];
-  const cloud = useMemo(() => tags.slice(0, 36), [tags]);
+  const cloud = useMemo(() => spreadFlickrTags(tags, 72), [tags]);
+  const maxCount = cloud.reduce((m, t) => Math.max(m, t.count), 1);
   const photoTags = current?.tags ?? [];
-  const banner = "/media/flickr-cover.jpg";
 
   const load = useCallback(async (nextTag: string | null) => {
     setBusy(true);
@@ -40,11 +47,13 @@ export function FlickrExplorer({
       const res = await getFlickrPage({
         data: { tag: nextTag || undefined, random: true },
       });
-      if (res.items.length) {
+      if (res.items.length || nextTag) {
         setFrames(res.items);
         setActive(0);
-        setTags((prev) => mergeFlickrTags(prev, res.items).slice(0, 48));
+        if (res.items.length) setTags((prev) => mergeFlickrTags(prev, res.items));
       }
+    } catch {
+      /* keep the haul already on screen */
     } finally {
       setBusy(false);
     }
@@ -56,7 +65,7 @@ export function FlickrExplorer({
       try {
         const fresh = await getFlickrTags();
         if (!alive) return;
-        setTags((prev) => mergeFlickrTags(fresh.length ? fresh : prev, items).slice(0, 48));
+        setTags((prev) => mergeFlickrTags(fresh.length ? fresh : prev, items));
       } catch {
         /* keep SSR tags */
       }
@@ -87,73 +96,192 @@ export function FlickrExplorer({
     void load(name);
   };
 
+  const browseOn = letter !== null || query.trim().length >= 2;
+
+  useEffect(() => {
+    if (!browseOn) return;
+    let alive = true;
+    const handle = window.setTimeout(() => {
+      void (async () => {
+        setBrowsing(true);
+        try {
+          const res = await getFlickrTagBrowse({
+            data: {
+              q: query.trim().length >= 2 ? query.trim() : undefined,
+              letter: letter ?? undefined,
+              page: browsePage,
+            },
+          });
+          if (alive) setBrowse(res);
+        } catch {
+          if (alive) setBrowse({ tags: [], total: 0, page: 1, pages: 1 });
+        } finally {
+          if (alive) setBrowsing(false);
+        }
+      })();
+    }, 180);
+    return () => {
+      alive = false;
+      window.clearTimeout(handle);
+    };
+  }, [browseOn, query, letter, browsePage]);
+
   return (
     <section id="flickr" className="scroll-mt-16 border-y border-border">
-      <div className="overflow-hidden bg-raised">
-        <img
-          src={banner}
-          alt="Flickr photostream cover"
-          className="aspect-[21/8] h-auto w-full max-w-full object-cover object-center sm:aspect-[1972/700]"
-          width={2048}
-          height={768}
-          loading="eager"
-        />
-        <div className="border-t border-border bg-bg px-4 py-5 sm:px-6">
-          <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Flickr · maximusmaximus</p>
-              <h2 className="mt-1 text-3xl font-bold tracking-tight">Tag cabinet</h2>
-              <p className="mt-2 max-w-xl text-sm text-muted">
-                {photos.toLocaleString("en-US")} photographs. A random haul each draw — follow a tag to wander the
-                archive.
-              </p>
-            </div>
-            <a
-              href="https://www.flickr.com/photos/maximusmaximus/"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-h-11 items-center text-sm font-semibold text-fg"
-            >
-              flickr.com/photos/maximusmaximus
-            </a>
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Flickr · maximusmaximus</p>
+            <h2 className="mt-1 text-2xl sm:text-3xl">Tag cabinet</h2>
+            <p className="mt-2 max-w-xl text-sm text-muted">
+              {photos.toLocaleString("en-US")} photographs. Pick a letter or search the full tag list, then open a
+              haul.
+            </p>
           </div>
+          <a
+            href="https://www.flickr.com/photos/maximusmaximus/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center text-sm font-semibold text-fg"
+          >
+            flickr.com/photos/maximusmaximus
+          </a>
         </div>
-      </div>
 
-      <div className="border-t border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-wrap gap-2 px-4 py-4 sm:px-6">
+        <div className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 sm:gap-x-4">
           <button
             type="button"
             onClick={() => pickTag(null)}
             className={cn(
-              "h-11 rounded-md px-3 text-sm font-semibold",
-              tag === null ? "bg-accent text-accent-fg" : "border border-border text-muted hover:text-fg",
+              "min-h-11 px-1 text-sm font-semibold",
+              tag === null ? "text-fg underline decoration-accent decoration-2 underline-offset-4" : "text-muted hover:text-fg",
             )}
           >
-            Random haul
+            Random
           </button>
-          {cloud.map((t) => (
+          {cloud.map((t) => {
+            const weight = Math.log(t.count + 1) / Math.log(maxCount + 1);
+            const size = 0.8 + weight * 1.35;
+            return (
+              <button
+                key={t.name}
+                type="button"
+                onClick={() => pickTag(t.name)}
+                style={{ fontSize: `${size}rem` }}
+                className={cn(
+                  "px-0.5 py-1 leading-none tracking-tight",
+                  tag === t.name
+                    ? "font-bold text-fg underline decoration-accent decoration-2 underline-offset-4"
+                    : t.fresh
+                      ? "font-semibold text-fg/80 hover:text-fg"
+                      : "text-muted hover:text-fg",
+                )}
+              >
+                {t.name}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setBrowsePage(1);
+            }}
+            placeholder="Search tags"
+            aria-label="Search Flickr tags"
+            className="h-11 w-full rounded-md border border-border bg-bg px-3 text-sm text-fg outline-none placeholder:text-subtle focus:border-accent sm:max-w-xs"
+          />
+          <div className="flex gap-1 overflow-x-auto pb-1">
             <button
-              key={t.name}
               type="button"
-              onClick={() => pickTag(t.name)}
+              onClick={() => {
+                setLetter(null);
+                setBrowsePage(1);
+              }}
               className={cn(
-                "h-11 rounded-md px-3 text-sm",
-                tag === t.name
-                  ? "bg-accent font-semibold text-accent-fg"
-                  : "border border-border text-muted hover:text-fg",
-                t.fresh && tag !== t.name ? "border-accent/50" : "",
+                "h-11 shrink-0 rounded-sm px-2.5 text-xs font-semibold",
+                letter === null ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
               )}
             >
-              #{t.name}
-              {t.count > 1 ? (
-                <span className="ml-1.5 font-mono text-[11px] opacity-70">{formatCompact(t.count)}</span>
-              ) : t.fresh ? (
-                <span className="ml-1.5 font-mono text-[11px] opacity-70">new</span>
-              ) : null}
+              Cloud
             </button>
-          ))}
+            {["#", ..."abcdefghijklmnopqrstuvwxyz"].map((ch) => (
+              <button
+                key={ch}
+                type="button"
+                onClick={() => {
+                  setLetter(ch);
+                  setBrowsePage(1);
+                }}
+                className={cn(
+                  "h-11 w-9 shrink-0 rounded-sm text-xs font-semibold uppercase",
+                  letter === ch ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
+                )}
+              >
+                {ch}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {browseOn ? (
+          <div className="mt-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">
+              {browsing && !browse
+                ? "Loading tags…"
+                : `${(browse?.total ?? 0).toLocaleString("en-US")} tags${letter ? ` · ${letter}` : ""}${query.trim().length >= 2 ? ` · “${query.trim()}”` : ""}`}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {(browse?.tags ?? []).map((t) => (
+                <button
+                  key={t.name}
+                  type="button"
+                  onClick={() => pickTag(t.name)}
+                  className={cn(
+                    "min-h-11 rounded-sm px-2.5 text-sm",
+                    tag === t.name ? "bg-accent font-semibold text-accent-fg" : "border border-border text-muted hover:text-fg",
+                  )}
+                >
+                  {t.name}
+                  {t.count > 1 ? (
+                    <span className="ml-1.5 font-mono text-[11px] opacity-70">{formatCompact(t.count)}</span>
+                  ) : null}
+                </button>
+              ))}
+              {!browsing && browse && browse.tags.length === 0 ? (
+                <p className="text-sm text-muted">No tags in this slice.</p>
+              ) : null}
+            </div>
+            {browse && browse.pages > 1 ? (
+              <div className="mt-3 flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={browse.page <= 1 || browsing}
+                  onClick={() => setBrowsePage((p) => Math.max(1, p - 1))}
+                >
+                  <ChevronLeft className="size-4" />
+                  Tags
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={browse.page >= browse.pages || browsing}
+                  onClick={() => setBrowsePage((p) => p + 1)}
+                >
+                  More tags
+                  <ChevronRight className="size-4" />
+                </Button>
+                <span className="font-mono text-xs text-subtle">
+                  {browse.page}/{browse.pages}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       <div className="border-t border-border bg-surface">
@@ -161,7 +289,7 @@ export function FlickrExplorer({
           <button
             type="button"
             onClick={() => current && setOpen(true)}
-            className="relative min-h-64 overflow-hidden bg-raised sm:min-h-96"
+            className="relative aspect-[4/3] min-h-56 overflow-hidden bg-raised sm:aspect-[16/10] lg:aspect-auto lg:min-h-[28rem]"
           >
             {current ? (
               <img
@@ -171,12 +299,9 @@ export function FlickrExplorer({
                 loading="eager"
               />
             ) : (
-              <img
-                src={banner}
-                alt="Flickr photostream"
-                className="h-full w-full max-w-full object-cover"
-                loading="eager"
-              />
+              <span className="grid h-full min-h-64 place-items-center px-6 text-sm text-muted">
+                {busy ? "Drawing a haul…" : "No photographs in this draw."}
+              </span>
             )}
           </button>
           <div className="flex min-w-0 flex-col justify-between border-t border-border p-5 lg:border-l lg:border-t-0">
@@ -249,7 +374,7 @@ export function FlickrExplorer({
       </div>
 
       <div className="border-t border-border">
-        <ul className="mx-auto grid max-w-6xl grid-cols-3 gap-1 p-2 sm:grid-cols-4 sm:p-3 md:grid-cols-6">
+        <ul className="mx-auto grid max-w-6xl grid-cols-3 gap-1 p-2 sm:grid-cols-4 sm:p-3 md:grid-cols-6 lg:grid-cols-8">
           {frames.map((p, i) => (
             <li key={p.id}>
               <button
@@ -273,7 +398,7 @@ export function FlickrExplorer({
 
       {open && current ? (
         <div className="fixed inset-0 z-50 flex flex-col bg-bg/95" role="dialog" aria-modal="true" aria-label={current.title}>
-          <div className="flex items-center justify-between gap-3 px-4 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-3 sm:px-4">
             <p className={cn("min-w-0 truncate text-sm", displayFontClass(current.title))}>{current.title}</p>
             <div className="flex items-center gap-2">
               <Button

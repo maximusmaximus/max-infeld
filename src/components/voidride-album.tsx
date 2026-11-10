@@ -4,13 +4,19 @@ import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DisplayTitle } from "@/components/display-title";
 import { VOIDRIDE, VOIDRIDE_PLAYLISTS } from "@/lib/profile";
+import type { VoidridePlaylist } from "@/lib/live";
 import { displayFontClass, cn } from "@/lib/utils";
 
-export function VoidrideAlbum() {
+export function VoidrideAlbum({ playlists }: { playlists?: VoidridePlaylist[] }) {
+  const albums = playlists?.length ? playlists : VOIDRIDE_PLAYLISTS;
   const [i, setI] = useState(0);
   const [hot, setHot] = useState(false);
-  const album = VOIDRIDE_PLAYLISTS[i];
-  const last = VOIDRIDE_PLAYLISTS.length - 1;
+  const album = albums[Math.min(i, albums.length - 1)]!;
+  const last = albums.length - 1;
+
+  useEffect(() => {
+    setI(0);
+  }, [albums[0]?.id]);
 
   const prev = () => setI((n) => (n === 0 ? last : n - 1));
   const next = () => setI((n) => (n === last ? 0 : n + 1));
@@ -50,7 +56,7 @@ export function VoidrideAlbum() {
     >
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
         <p className="font-mono text-xs uppercase tracking-wider text-subtle">
-          Xerographer Media · {i + 1} / {VOIDRIDE_PLAYLISTS.length}
+          Xerographer Media · {Math.min(i, last) + 1} / {albums.length}
         </p>
         <div className="flex gap-2">
           <button
@@ -85,7 +91,7 @@ export function VoidrideAlbum() {
           <p className="font-mono text-xs uppercase tracking-wider text-subtle">{album.released}</p>
           <DisplayTitle className="mt-2 text-3xl tracking-tight">{VOIDRIDE.artist}</DisplayTitle>
           <p className={cn("mt-1 text-lg text-muted", displayFontClass(album.title))}>{album.title}</p>
-          <p className="mt-3 max-w-xl text-sm text-muted">{album.blurb}</p>
+          <p className="mt-3 line-clamp-3 max-w-xl text-sm text-muted">{album.blurb}</p>
           <ol className="mt-5 divide-y divide-border border-y border-border">
             {album.tracks.map((t, n) => (
               <li key={t.href}>

@@ -10,6 +10,7 @@ import { MarisolShelf } from "@/components/marisol-shelf";
 import { AlienWorldsBanner } from "@/components/alien-worlds-banner";
 import { ProjectBanners } from "@/components/project-banners";
 import { GrokWorksBanners } from "@/components/grok-works-banners";
+import { GithubBanner } from "@/components/github-banner";
 import { ChristiesBanner } from "@/components/christies-banner";
 import { VoidrideAlbum } from "@/components/voidride-album";
 import { getLiveFeed } from "@/lib/live";
@@ -43,7 +44,7 @@ function Home() {
             <p className="text-sm font-semibold uppercase tracking-wider text-muted">
               Strategy and consulting
             </p>
-            <h1 className="mt-3 font-display text-4xl leading-none">
+            <h1 className="mt-3 font-display text-3xl leading-[0.9] sm:text-4xl">
               Max
               <br />
               Infeld
@@ -90,7 +91,6 @@ function Home() {
 
       <FlickrExplorer
         photos={feed.flickr?.photos ?? 14136}
-        cover={feed.flickr?.cover || "/media/flickr-cover.jpg"}
         items={feed.flickr?.items ?? []}
         pages={feed.flickr?.pages ?? 1}
         tags={feed.flickr?.tags ?? []}
@@ -129,7 +129,7 @@ function Home() {
 
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Xerographer Media</p>
-        <VoidrideAlbum />
+        <VoidrideAlbum playlists={feed.voidride} />
       </section>
 
       <AlienWorldsBanner />
@@ -137,6 +137,7 @@ function Home() {
       <ProjectBanners />
 
       <GrokWorksBanners />
+      <GithubBanner />
 
       <section className="border-y border-border bg-surface">
         <blockquote className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-16">

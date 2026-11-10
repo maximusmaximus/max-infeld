@@ -69,8 +69,8 @@ export function ChristiesBanner({ framed }: { framed?: boolean }) {
             <p className="font-mono text-xs uppercase tracking-wider text-white/60">
               Christie's New York · 1 October 2021
             </p>
-            <DisplayTitle className="mt-2 text-4xl text-white">CURIO CARDS</DisplayTitle>
-            <p className="mt-3 font-sans text-3xl font-bold tracking-tight">393 ETH</p>
+            <DisplayTitle className="mt-2 text-3xl text-white sm:text-4xl">CURIO CARDS</DisplayTitle>
+            <p className="mt-3 font-sans text-2xl font-bold tracking-tight sm:text-3xl">393 ETH</p>
             <p className="mt-3 max-w-md text-sm text-white/80">
               Full set of 30 cards plus misprint 17b. The first collection sold at Christie's with
               live bidding in Ether. Cards 27, 28, and 29 — Blue, Pink, Yellow — are by Marisol
@@ -90,7 +90,7 @@ export function ChristiesBanner({ framed }: { framed?: boolean }) {
             complete set sold at Sotheby's Natively Digital 1.2: The Collectors.
           </p>
         </div>
-        <ul className="mx-auto grid max-w-6xl grid-cols-4 gap-1 px-4 pb-6 sm:grid-cols-6 sm:px-6 lg:grid-cols-8">
+        <ul className="mx-auto grid max-w-6xl grid-cols-3 gap-1 px-3 pb-5 sm:grid-cols-4 sm:px-6 md:grid-cols-6 lg:grid-cols-8">
           {CARDS.map((c) => (
             <li key={c.number}>
               <figure

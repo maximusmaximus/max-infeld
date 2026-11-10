@@ -28,7 +28,7 @@ export function SiteHeader() {
           >
             M
           </span>
-          <span className="font-display text-lg tracking-tight">Max Infeld</span>
+          <span className="truncate font-display text-base tracking-tight sm:text-lg">Max Infeld</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">

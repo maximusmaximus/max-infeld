@@ -7,13 +7,16 @@ import { FoundFlyers } from "@/components/found-flyers";
 import { MarisolBook } from "@/components/marisol-book";
 import { GrokWorksBanners } from "@/components/grok-works-banners";
 import { ChristiesBanner } from "@/components/christies-banner";
+import { getVoidride } from "@/lib/live";
 import { TALKS } from "@/lib/profile";
 
 export const Route = createFileRoute("/artist")({
+  loader: () => getVoidride(),
   component: Artist,
 });
 
 function Artist() {
+  const playlists = Route.useLoaderData();
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
       <p className="font-mono text-xs uppercase tracking-wider text-subtle">Artist</p>
@@ -91,7 +94,7 @@ function Artist() {
 
       <section className="mt-14">
         <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Xerographer Media</p>
-        <VoidrideAlbum />
+        <VoidrideAlbum playlists={playlists} />
       </section>
 
       <section className="mt-14">

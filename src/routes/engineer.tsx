@@ -6,6 +6,7 @@ import { FeedList } from "@/components/feed-list";
 import { ProjectBanner } from "@/components/project-banners";
 import { AlienWorldsBanner } from "@/components/alien-worlds-banner";
 import { GrokWorksBanners } from "@/components/grok-works-banners";
+import { GithubBanner } from "@/components/github-banner";
 import { getLiveFeed } from "@/lib/live";
 import { displayFontClass, cn } from "@/lib/utils";
 
@@ -55,6 +56,9 @@ function Engineer() {
       <ProjectBanner id="mcclaw" />
       <ProjectBanner id="culty" />
       <GrokWorksBanners framed />
+      <div className="mt-6">
+        <GithubBanner framed />
+      </div>
 
       <section className="mt-14">
         <div className="flex items-end justify-between gap-4">

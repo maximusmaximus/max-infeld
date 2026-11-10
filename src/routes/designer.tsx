@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DafontBanner } from "@/components/dafont-banner";
 import { FontsGrokBanner } from "@/components/fonts-grok-banner";
+import { GrokWorksBanners } from "@/components/grok-works-banners";
 import { DisplayTitle } from "@/components/display-title";
 import { FeedList } from "@/components/feed-list";
 import { getLiveFeed } from "@/lib/live";
@@ -47,6 +48,9 @@ function Designer() {
 
       <section className="mt-14">
         <FontsGrokBanner framed />
+      </section>
+      <section className="mt-6">
+        <GrokWorksBanners framed ids={["xeroemoji"]} />
       </section>
 
       <div className="-mx-4 mt-14 sm:-mx-6">
