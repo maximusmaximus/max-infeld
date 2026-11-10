@@ -1,22 +1,22 @@
 import { ChevronLeft, ChevronRight, Dices, ExternalLink, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   getFlickrPage,
   getFlickrTagBrowse,
-  getFlickrTags,
+  isFlickrTagUseful,
   mergeFlickrTags,
-  spreadFlickrTags,
   type FlickrPhoto,
   type FlickrTag,
 } from "@/lib/live";
-import { DisplayTitle } from "@/components/display-title";
 import { FitText } from "@/components/fit-text";
 import { cn, displayFontClass, formatCompact } from "@/lib/utils";
 
+const TAG_CHUNK = 400;
+
 export function FlickrExplorer({
-  photos,
   items,
+  pages: initialPages,
   tags: initialTags,
 }: {
   photos: number;
@@ -29,57 +29,112 @@ export function FlickrExplorer({
   const [active, setActive] = useState(0);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [tag, setTag] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
-  const [letter, setLetter] = useState<string | null>(null);
-  const [browsePage, setBrowsePage] = useState(1);
-  const [browsing, setBrowsing] = useState(false);
-  const [browse, setBrowse] = useState<{ tags: FlickrTag[]; total: number; page: number; pages: number } | null>(
-    null,
-  );
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(initialPages);
+  const [tagPage, setTagPage] = useState(1);
+  const [tagPages, setTagPages] = useState(1);
+  const [tagsLoading, setTagsLoading] = useState(false);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const cabinetRef = useRef<HTMLDivElement>(null);
 
   const current = frames[active] ?? frames[0];
-  const cloud = useMemo(() => spreadFlickrTags(tags, 72), [tags]);
-  const maxCount = cloud.reduce((m, t) => Math.max(m, t.count), 1);
+  const cabinet = useMemo(() => {
+    const seen = new Set<string>();
+    return tags
+      .filter((t) => {
+        if (!t.name || seen.has(t.name) || !isFlickrTagUseful(t.name)) return false;
+        seen.add(t.name);
+        return true;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [tags]);
+  const maxCount = cabinet.reduce((m, t) => Math.max(m, t.count), 1);
   const photoTags = current?.tags ?? [];
+  const hasMore = page < pages;
 
-  const load = useCallback(async (nextTag: string | null) => {
-    setBusy(true);
-    try {
-      const res = await getFlickrPage({
-        data: { tag: nextTag || undefined, random: true },
-      });
-      if (res.items.length || nextTag) {
-        setFrames(res.items);
-        setActive(0);
-        if (res.items.length) setTags((prev) => mergeFlickrTags(prev, res.items));
+  const syncStrip = useCallback(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 2);
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+  }, []);
+
+  const load = useCallback(
+    async (nextTag: string | null, opts: { random?: boolean; page?: number; append?: boolean } = {}) => {
+      const append = opts.append ?? false;
+      if (append) setLoadingMore(true);
+      else setBusy(true);
+      try {
+        const res = await getFlickrPage({
+          data: {
+            tag: nextTag || undefined,
+            random: opts.random || undefined,
+            page: opts.random ? undefined : (opts.page ?? 1),
+          },
+        });
+        if (append) {
+          if (res.items.length) {
+            setFrames((prev) => {
+              const seen = new Set(prev.map((p) => p.id));
+              return [...prev, ...res.items.filter((p) => !seen.has(p.id))];
+            });
+            setPage(res.page);
+            setPages(res.pages);
+            setTags((prev) => mergeFlickrTags(prev, res.items));
+          } else {
+            setPages((current) => (opts.page ? Math.max(1, opts.page - 1) : current));
+          }
+        } else {
+          setFrames(res.items);
+          setActive(0);
+          setPage(res.page);
+          setPages(res.items.length === 0 ? 1 : res.pages);
+          if (res.items.length) setTags((prev) => mergeFlickrTags(prev, res.items));
+          requestAnimationFrame(() => {
+            const el = stripRef.current;
+            if (el) el.scrollTo({ left: 0 });
+            syncStrip();
+          });
+        }
+      } catch {
+        /* keep the haul already on screen */
+      } finally {
+        setBusy(false);
+        setLoadingMore(false);
       }
+    },
+    [syncStrip],
+  );
+
+  const loadTagChunk = useCallback(async (nextPage: number) => {
+    setTagsLoading(true);
+    try {
+      const res = await getFlickrTagBrowse({ data: { page: nextPage, limit: TAG_CHUNK } });
+      setTags((prev) => {
+        const seen = new Set(prev.map((t) => t.name));
+        const add = res.tags.filter((t) => t.name && !seen.has(t.name));
+        return add.length ? [...prev, ...add] : prev;
+      });
+      setTagPage(res.page);
+      setTagPages(res.pages);
     } catch {
-      /* keep the haul already on screen */
+      /* keep tags already on screen */
     } finally {
-      setBusy(false);
+      setTagsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    let alive = true;
-    void (async () => {
-      try {
-        const fresh = await getFlickrTags();
-        if (!alive) return;
-        setTags((prev) => mergeFlickrTags(fresh.length ? fresh : prev, items));
-      } catch {
-        /* keep SSR tags */
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [items]);
+    void loadTagChunk(1);
+  }, [loadTagChunk]);
 
   useEffect(() => {
     if (items.length) return;
-    void load(null);
+    void load(null, { page: 1 });
   }, [items.length, load]);
 
   useEffect(() => {
@@ -93,225 +148,49 @@ export function FlickrExplorer({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, frames.length]);
 
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      const next = el.scrollLeft + e.deltaY;
+      const atStart = el.scrollLeft <= 0 && e.deltaY < 0;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1 && e.deltaY > 0;
+      if (atStart || atEnd) return;
+      e.preventDefault();
+      el.scrollLeft = next;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    const ro = new ResizeObserver(syncStrip);
+    ro.observe(el);
+    syncStrip();
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      ro.disconnect();
+    };
+  }, [syncStrip, frames.length, hasMore]);
+
   const pickTag = (name: string | null) => {
     setTag(name);
-    void load(name);
+    void load(name, { page: 1 });
   };
 
-  const browseOn = letter !== null || query.trim().length >= 2;
+  const scrollStrip = (dir: -1 | 1) => {
+    const el = stripRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(el.clientWidth * 0.8, 160), behavior: "smooth" });
+  };
 
-  useEffect(() => {
-    if (!browseOn) return;
-    let alive = true;
-    const handle = window.setTimeout(() => {
-      void (async () => {
-        setBrowsing(true);
-        try {
-          const res = await getFlickrTagBrowse({
-            data: {
-              q: query.trim().length >= 2 ? query.trim() : undefined,
-              letter: letter ?? undefined,
-              page: browsePage,
-            },
-          });
-          if (alive) setBrowse(res);
-        } catch {
-          if (alive) setBrowse({ tags: [], total: 0, page: 1, pages: 1 });
-        } finally {
-          if (alive) setBrowsing(false);
-        }
-      })();
-    }, 180);
-    return () => {
-      alive = false;
-      window.clearTimeout(handle);
-    };
-  }, [browseOn, query, letter, browsePage]);
+  const onCabinetScroll = () => {
+    const el = cabinetRef.current;
+    if (!el || tagsLoading || tagPage >= tagPages) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 16) {
+      void loadTagChunk(tagPage + 1);
+    }
+  };
 
   return (
-    <section id="flickr" className="scroll-mt-16 border-y border-border">
-      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Flickr · maximusmaximus</p>
-            <DisplayTitle className="mt-1 text-2xl sm:text-3xl">Tag cabinet</DisplayTitle>
-            <p className="mt-2 max-w-xl text-sm text-muted">
-              {photos.toLocaleString("en-US")} photographs. Pick a letter or search the full tag list, then open a
-              haul.
-            </p>
-          </div>
-          <a
-            href="https://www.flickr.com/photos/maximusmaximus/"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-11 items-center text-sm font-semibold text-fg"
-          >
-            <span className="sm:hidden">View on Flickr</span>
-            <span className="hidden sm:inline">flickr.com/photos/maximusmaximus</span>
-          </a>
-        </div>
-
-        <div className="mt-4 hidden flex-wrap items-baseline gap-x-3 gap-y-1 sm:mt-6 sm:flex sm:gap-x-4">
-          <button
-            type="button"
-            onClick={() => pickTag(null)}
-            className={cn(
-              "min-h-11 px-1 text-sm font-semibold",
-              tag === null ? "text-fg underline decoration-accent decoration-2 underline-offset-4" : "text-muted hover:text-fg",
-            )}
-          >
-            Random
-          </button>
-          {cloud.map((t) => {
-            const weight = Math.log(t.count + 1) / Math.log(maxCount + 1);
-            const size = 0.8 + weight * 1.35;
-            return (
-              <button
-                key={t.name}
-                type="button"
-                onClick={() => pickTag(t.name)}
-                style={{ fontSize: `${size}rem` }}
-                className={cn(
-                  "px-0.5 py-1 leading-none tracking-tight",
-                  tag === t.name
-                    ? "font-bold text-fg underline decoration-accent decoration-2 underline-offset-4"
-                    : t.fresh
-                      ? "font-semibold text-fg/80 hover:text-fg"
-                      : "text-muted hover:text-fg",
-                )}
-              >
-                {t.name}
-              </button>
-            );
-          })}
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2 sm:hidden">
-          <button
-            type="button"
-            onClick={() => pickTag(null)}
-            className={cn(
-              "min-h-11 rounded-sm px-2.5 text-sm font-semibold",
-              tag === null ? "bg-accent text-accent-fg" : "border border-border text-muted",
-            )}
-          >
-            Random
-          </button>
-          {cloud.slice(0, 8).map((t) => (
-            <button
-              key={t.name}
-              type="button"
-              onClick={() => pickTag(t.name)}
-              className={cn(
-                "min-h-11 max-w-[9.5rem] truncate rounded-sm border px-2.5 text-sm",
-                tag === t.name ? "border-accent bg-accent font-semibold text-accent-fg" : "border-border text-muted",
-              )}
-            >
-              {t.name}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <input
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setBrowsePage(1);
-            }}
-            placeholder="Search tags"
-            aria-label="Search Flickr tags"
-            className="h-11 w-full rounded-md border border-border bg-bg px-3 text-sm text-fg outline-none placeholder:text-subtle focus:border-accent sm:max-w-xs"
-          />
-          <div className="flex min-w-0 max-w-full gap-1 overflow-x-auto overscroll-x-contain pb-1">
-            <button
-              type="button"
-              onClick={() => {
-                setLetter(null);
-                setBrowsePage(1);
-              }}
-              className={cn(
-                "h-11 shrink-0 rounded-sm px-2.5 text-xs font-semibold",
-                letter === null ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
-              )}
-            >
-              Cloud
-            </button>
-            {["#", ..."abcdefghijklmnopqrstuvwxyz"].map((ch) => (
-              <button
-                key={ch}
-                type="button"
-                onClick={() => {
-                  setLetter(ch);
-                  setBrowsePage(1);
-                }}
-                className={cn(
-                  "h-11 w-9 shrink-0 rounded-sm text-xs font-semibold uppercase",
-                  letter === ch ? "bg-accent text-accent-fg" : "text-muted hover:text-fg",
-                )}
-              >
-                {ch}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {browseOn ? (
-          <div className="mt-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-subtle">
-              {browsing && !browse
-                ? "Loading tags…"
-                : `${(browse?.total ?? 0).toLocaleString("en-US")} tags${letter ? ` · ${letter}` : ""}${query.trim().length >= 2 ? ` · “${query.trim()}”` : ""}`}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {(browse?.tags ?? []).map((t) => (
-                <button
-                  key={t.name}
-                  type="button"
-                  onClick={() => pickTag(t.name)}
-                  className={cn(
-                    "min-h-11 rounded-sm px-2.5 text-sm",
-                    tag === t.name ? "bg-accent font-semibold text-accent-fg" : "border border-border text-muted hover:text-fg",
-                  )}
-                >
-                  {t.name}
-                  {t.count > 1 ? (
-                    <span className="ml-1.5 font-mono text-[11px] opacity-70">{formatCompact(t.count)}</span>
-                  ) : null}
-                </button>
-              ))}
-              {!browsing && browse && browse.tags.length === 0 ? (
-                <p className="text-sm text-muted">No tags in this slice.</p>
-              ) : null}
-            </div>
-            {browse && browse.pages > 1 ? (
-              <div className="mt-3 flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={browse.page <= 1 || browsing}
-                  onClick={() => setBrowsePage((p) => Math.max(1, p - 1))}
-                >
-                  <ChevronLeft className="size-4" />
-                  Tags
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={browse.page >= browse.pages || browsing}
-                  onClick={() => setBrowsePage((p) => p + 1)}
-                >
-                  More tags
-                  <ChevronRight className="size-4" />
-                </Button>
-                <span className="font-mono text-xs text-subtle">
-                  {browse.page}/{browse.pages}
-                </span>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-
+    <section id="flickr" className="scroll-mt-16 overflow-x-hidden border-y border-border">
       <div className="relative w-full overflow-hidden bg-black">
         <button
           type="button"
@@ -338,8 +217,8 @@ export function FlickrExplorer({
         <div className="@container pointer-events-none absolute inset-0 flex flex-col justify-end">
           <div className="pointer-events-auto w-full min-w-0 px-4 pb-4 sm:px-6 sm:pb-8">
             <p className="font-mono text-[10px] uppercase tracking-wider text-white/70 sm:text-xs">
-              {tag ? `#${tag}` : "Random haul"}
-              {frames.length ? ` · ${active + 1}/${frames.length}` : busy ? " · drawing…" : ""}
+              {tag ? `#${tag}` : ""}
+              {frames.length ? `${tag ? " · " : ""}${active + 1}/${frames.length}` : busy ? `${tag ? " · " : ""}drawing…` : ""}
             </p>
             <FitText
               as="h3"
@@ -392,7 +271,13 @@ export function FlickrExplorer({
               >
                 <ChevronRight className="size-4" />
               </Button>
-              <Button type="button" variant="outline" className="border-white/30 bg-black/30 text-white hover:bg-black/50" disabled={busy} onClick={() => void load(tag)}>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-white/30 bg-black/30 text-white hover:bg-black/50"
+                disabled={busy}
+                onClick={() => void load(tag, { random: true })}
+              >
                 <Dices className="size-4" />
                 {busy ? "Drawing…" : "Shuffle"}
               </Button>
@@ -412,26 +297,109 @@ export function FlickrExplorer({
       </div>
 
       <div className="border-t border-border">
-        <ul className="mx-auto grid max-w-6xl grid-cols-3 gap-1 p-2 sm:grid-cols-4 sm:p-3 md:grid-cols-6 lg:grid-cols-8">
-          {frames.map((p, i) => (
-            <li key={p.id}>
+        <div className="mx-auto max-w-6xl px-4 pt-2 sm:px-6">
+          <div
+            ref={cabinetRef}
+            onScroll={onCabinetScroll}
+            data-flickr-cabinet
+            className="max-h-[4.5rem] overflow-x-hidden overflow-y-auto overscroll-contain"
+          >
+            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0 leading-tight">
               <button
                 type="button"
+                onClick={() => pickTag(null)}
+                className={cn(
+                  "px-0 py-0.5 text-[11px] leading-tight",
+                  tag === null
+                    ? "font-semibold text-fg underline decoration-accent decoration-2 underline-offset-2"
+                    : "text-muted hover:text-fg",
+                )}
+              >
+                all
+              </button>
+              {cabinet.map((t) => {
+                const weight = Math.log(t.count + 1) / Math.log(maxCount + 1);
+                const size = 11 + weight * 2;
+                return (
+                  <button
+                    key={t.name}
+                    type="button"
+                    data-flickr-tag={t.name}
+                    onClick={() => pickTag(t.name)}
+                    style={{ fontSize: `${size}px` }}
+                    className={cn(
+                      "px-0 py-0.5 leading-tight",
+                      tag === t.name
+                        ? "font-semibold text-fg underline decoration-accent decoration-2 underline-offset-2"
+                        : "text-muted hover:text-fg",
+                    )}
+                  >
+                    {t.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mt-2 pb-2">
+          <button
+            type="button"
+            onClick={() => scrollStrip(-1)}
+            disabled={!canLeft}
+            aria-label="Scroll previews left"
+            className="absolute top-1/2 left-1 z-10 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-fg shadow-sm disabled:opacity-30 md:flex"
+          >
+            <ChevronLeft className="size-4" />
+          </button>
+          <div
+            ref={stripRef}
+            data-flickr-strip
+            onScroll={syncStrip}
+            className="flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain px-4 [scrollbar-width:thin] sm:px-6 md:px-12"
+          >
+            {frames.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                data-flickr-thumb
+                data-taken={p.taken ?? ""}
+                data-posted={p.posted ?? ""}
                 onClick={() => {
                   setActive(i);
                   setOpen(true);
                 }}
                 className={cn(
-                  "relative aspect-square w-full overflow-hidden rounded-xs border",
+                  "relative size-20 shrink-0 snap-start overflow-hidden rounded-xs border sm:size-24",
                   i === active ? "border-accent" : "border-transparent",
                 )}
                 aria-label={p.title}
               >
                 <img src={p.thumb} alt="" className="h-full w-full object-cover" loading="eager" />
               </button>
-            </li>
-          ))}
-        </ul>
+            ))}
+            {hasMore ? (
+              <button
+                type="button"
+                data-flickr-load-more
+                disabled={loadingMore}
+                onClick={() => void load(tag, { page: page + 1, append: true })}
+                className="flex size-20 shrink-0 snap-start items-center justify-center border border-border text-[11px] font-semibold text-fg sm:size-24"
+              >
+                {loadingMore ? "…" : "Load more"}
+              </button>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            onClick={() => scrollStrip(1)}
+            disabled={!canRight}
+            aria-label="Scroll previews right"
+            className="absolute top-1/2 right-1 z-10 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-bg/90 text-fg shadow-sm disabled:opacity-30 md:flex"
+          >
+            <ChevronRight className="size-4" />
+          </button>
+        </div>
       </div>
 
       {open && current ? (

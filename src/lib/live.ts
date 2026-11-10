@@ -65,6 +65,7 @@ export type FlickrPhoto = {
   href: string;
   views?: number;
   taken?: string;
+  posted?: string;
   tags: string[];
 };
 
@@ -453,6 +454,8 @@ function parseFlickrPhotos(html: string): FlickrPhoto[] {
     if (!id || seen.has(id)) continue;
     seen.add(id);
     const taken = chunk.match(/"dateTaken":"([^"]+)"/)?.[1];
+    const postedRaw = chunk.match(/"datePosted":"?(\d+)"?/)?.[1];
+    const posted = postedRaw ? new Date(Number(postedRaw) * 1000).toISOString() : undefined;
     const views = chunk.match(/"viewCount":(\d+)/)?.[1];
     items.push({
       id,
@@ -462,6 +465,7 @@ function parseFlickrPhotos(html: string): FlickrPhoto[] {
       href: `${FLICKR_PHOTO}${id}/`,
       views: views ? Number(views) : undefined,
       taken,
+      posted,
       tags: [],
     });
   }
@@ -473,6 +477,15 @@ function hintedPages(html: string): number {
     .map((m) => Number(m[1]))
     .filter((n) => n > 0 && n < 2000);
   return nums.length ? Math.max(...nums) : 1;
+}
+
+function flickrStreamPages(html: string, page: number, itemCount: number): number {
+  const hinted = hintedPages(html);
+  if (itemCount === 0) return Math.max(1, hinted, page - 1);
+  if (hinted > page) return hinted;
+  // A full page with no later page link may still have older photos.
+  if (itemCount >= 12) return page + 1;
+  return Math.max(hinted, page);
 }
 
 async function fetchFlickrHtml(page: number, tag?: string): Promise<string> {
@@ -540,6 +553,7 @@ export const getFlickrTagBrowse = createServerFn({ method: "POST" })
       q: z.string().max(48).optional(),
       letter: z.string().max(2).optional(),
       page: z.number().int().min(1).max(800).optional(),
+      limit: z.number().int().min(1).max(500).optional(),
     }),
   )
   .handler(async ({ data }): Promise<{ tags: FlickrTag[]; total: number; page: number; pages: number }> => {
@@ -551,11 +565,12 @@ export const getFlickrTagBrowse = createServerFn({ method: "POST" })
     else if (letter) list = list.filter((n) => n.startsWith(letter));
     if (q) list = list.filter((n) => n.includes(q));
     const total = list.length;
-    const pages = Math.max(1, Math.ceil(total / FLICKR_TAG_PAGE));
+    const size = data.limit ?? FLICKR_TAG_PAGE;
+    const pages = Math.max(1, Math.ceil(total / size));
     const page = Math.min(Math.max(1, data.page ?? 1), pages);
-    const start = (page - 1) * FLICKR_TAG_PAGE;
+    const start = (page - 1) * size;
     return {
-      tags: list.slice(start, start + FLICKR_TAG_PAGE).map((name) => ({
+      tags: list.slice(start, start + size).map((name) => ({
         name,
         count: 1,
       })),
@@ -621,7 +636,7 @@ async function fetchFlickrHome(): Promise<FlickrFeed> {
   ]);
   const html = stream.status === "fulfilled" ? stream.value : "";
   const aboutHtml = about.status === "fulfilled" ? about.value : "";
-  const items = html ? parseFlickrPhotos(html).slice(0, 16) : [];
+  const items = html ? parseFlickrPhotos(html) : [];
   const countMatch = `${html}\n${aboutHtml}`.match(/"photoCount":(\d+)/);
   const photos = countMatch ? Number(countMatch[1]) : 14136;
   const viewsMatch = aboutHtml.match(/"totalViews"\s*:\s*(\d+)/);
@@ -639,10 +654,7 @@ async function fetchFlickrHome(): Promise<FlickrFeed> {
 
 async function fetchFlickrTags(): Promise<FlickrTag[]> {
   const index = await loadFlickrTagIndex();
-  return spreadFlickrTags(
-    index.names.map((name) => ({ name, count: 1 })),
-    72,
-  );
+  return index.names.map((name) => ({ name, count: 1 }));
 }
 
 export const getFlickrTags = createServerFn({ method: "GET" }).handler(async (): Promise<FlickrTag[]> => {
@@ -667,17 +679,19 @@ export const getFlickrPage = createServerFn({ method: "POST" })
     }): Promise<{ items: FlickrPhoto[]; page: number; pages: number; tags: FlickrTag[] }> => {
       try {
         const tag = data.tag?.trim().toLowerCase() || undefined;
-        if (data.page && !data.random) {
-          const html = await fetchFlickrHtml(data.page, tag);
-          return {
-            items: parseFlickrPhotos(html).slice(0, 18),
-            page: data.page,
-            pages: hintedPages(html),
-            tags: [],
-          };
+        if (data.random) {
+          const haul = await flickrHtmlHaul(tag);
+          return { items: haul.items, page: haul.page, pages: haul.pages, tags: [] };
         }
-        const haul = await flickrHtmlHaul(tag);
-        return { items: haul.items, page: haul.page, pages: haul.pages, tags: [] };
+        const page = data.page ?? 1;
+        const html = await fetchFlickrHtml(page, tag);
+        const items = parseFlickrPhotos(html);
+        return {
+          items,
+          page,
+          pages: flickrStreamPages(html, page, items.length),
+          tags: [],
+        };
       } catch {
         return { items: [], page: 1, pages: 1, tags: [] };
       }
