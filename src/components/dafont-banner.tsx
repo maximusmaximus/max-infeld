@@ -2,6 +2,7 @@ import { ArrowUpRight, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FONT_PROFILES, MAILTO_URL } from "@/lib/profile";
+import { DisplayTitle } from "@/components/display-title";
 import { MobileCollapse } from "@/components/mobile-collapse";
 import { formatDafontRange, recentDafontUpdates } from "@/lib/projects";
 
@@ -21,7 +22,7 @@ export function DafontBanner({ fonts }: { fonts: number }) {
               <Badge className="border-border bg-accent text-accent-fg">Recently updated</Badge>
             ) : null}
           </div>
-          <h2 className="mt-3 font-display text-3xl sm:text-4xl">Type for everyone</h2>
+          <DisplayTitle className="mt-3 text-3xl sm:text-4xl">Type for everyone</DisplayTitle>
           <p className="mt-4 max-w-xl text-sm text-muted">
             {fonts.toLocaleString("en-US")} original typefaces. 100M+ downloads. Download on DaFont.
             Contact for commercial use licensing.

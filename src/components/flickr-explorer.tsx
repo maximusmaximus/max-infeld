@@ -10,6 +10,8 @@ import {
   type FlickrPhoto,
   type FlickrTag,
 } from "@/lib/live";
+import { DisplayTitle } from "@/components/display-title";
+import { FitText } from "@/components/fit-text";
 import { cn, displayFontClass, formatCompact } from "@/lib/utils";
 
 export function FlickrExplorer({
@@ -132,7 +134,7 @@ export function FlickrExplorer({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-wider text-subtle">Flickr · maximusmaximus</p>
-            <h2 className="mt-1 text-2xl sm:text-3xl">Tag cabinet</h2>
+            <DisplayTitle className="mt-1 text-2xl sm:text-3xl">Tag cabinet</DisplayTitle>
             <p className="mt-2 max-w-xl text-sm text-muted">
               {photos.toLocaleString("en-US")} photographs. Pick a letter or search the full tag list, then open a
               haul.
@@ -310,61 +312,70 @@ export function FlickrExplorer({
         ) : null}
       </div>
 
-      <div className="border-t border-border bg-surface">
-        <div className="mx-auto grid max-w-6xl gap-0 lg:grid-cols-[1.4fr_0.8fr]">
-          <button
-            type="button"
-            onClick={() => current && setOpen(true)}
-            className="relative aspect-[4/3] min-h-56 overflow-hidden bg-raised sm:aspect-[16/10] lg:aspect-auto lg:min-h-[28rem]"
-          >
-            {current ? (
-              <img
-                src={current.url}
-                alt={current.title}
-                className="h-full w-full max-w-full object-contain"
-                loading="eager"
-              />
-            ) : (
-              <span className="grid h-full min-h-64 place-items-center px-6 text-sm text-muted">
-                {busy ? "Drawing a haul…" : "No photographs in this draw."}
-              </span>
-            )}
-          </button>
-          <div className="flex min-w-0 flex-col justify-between border-t border-border p-5 lg:border-l lg:border-t-0">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-subtle">
-                {tag ? `#${tag}` : "Random haul"}
-                {frames.length ? ` · ${active + 1}/${frames.length}` : busy ? " · drawing…" : ""}
-              </p>
-              <h3 className={cn("mt-2 line-clamp-2 text-xl tracking-tight sm:line-clamp-none", displayFontClass(current?.title ?? "Flickr"))}>
-                {current?.title ?? "Flickr photostream"}
-              </h3>
-              <p className="mt-2 text-sm text-muted">
-                {current?.taken ? current.taken.slice(0, 10) : "flickr.com/photos/maximusmaximus"}
-                {current?.views ? ` · ${formatCompact(current.views)} views` : ""}
-              </p>
-              {photoTags.length ? (
-                <div className="mt-4 flex max-h-24 flex-wrap gap-1.5 overflow-hidden sm:max-h-none">
-                  {photoTags.map((name) => (
-                    <button
-                      key={name}
-                      type="button"
-                      onClick={() => pickTag(name)}
-                      className={cn(
-                        "h-8 rounded-sm px-2 text-xs font-semibold",
-                        tag === name ? "bg-accent text-accent-fg" : "border border-border text-muted hover:text-fg",
-                      )}
-                    >
-                      #{name}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-2">
+      <div className="relative w-full overflow-hidden bg-black">
+        <button
+          type="button"
+          onClick={() => current && setOpen(true)}
+          className="relative block w-full"
+          aria-label={current ? `Open ${current.title}` : "Flickr haul"}
+        >
+          {current ? (
+            <img
+              src={current.url}
+              alt={current.title}
+              className="aspect-[16/10] h-auto w-full max-w-full object-cover sm:aspect-[21/9] lg:aspect-[21/8]"
+              width={1600}
+              height={900}
+              loading="eager"
+            />
+          ) : (
+            <span className="grid aspect-[16/10] w-full place-items-center bg-raised text-sm text-muted sm:aspect-[21/9] lg:aspect-[21/8]">
+              {busy ? "Drawing a haul…" : "No photographs in this draw."}
+            </span>
+          )}
+          <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+        </button>
+        <div className="@container pointer-events-none absolute inset-0 flex flex-col justify-end">
+          <div className="pointer-events-auto w-full min-w-0 px-4 pb-4 sm:px-6 sm:pb-8">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-white/70 sm:text-xs">
+              {tag ? `#${tag}` : "Random haul"}
+              {frames.length ? ` · ${active + 1}/${frames.length}` : busy ? " · drawing…" : ""}
+            </p>
+            <FitText
+              as="h3"
+              className={cn(
+                "mt-1 max-w-4xl text-[clamp(1.25rem,5cqi,var(--text-3xl))] tracking-tight text-white",
+                displayFontClass(current?.title ?? "Flickr"),
+              )}
+            >
+              {current?.title ?? "Flickr photostream"}
+            </FitText>
+            <p className="mt-1 text-sm font-semibold text-white/85">
+              {current?.taken ? current.taken.slice(0, 10) : "flickr.com/photos/maximusmaximus"}
+              {current?.views ? ` · ${formatCompact(current.views)} views` : ""}
+            </p>
+            {photoTags.length ? (
+              <div className="mt-3 flex max-h-16 flex-wrap gap-1.5 overflow-hidden sm:max-h-20">
+                {photoTags.slice(0, 10).map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => pickTag(name)}
+                    className={cn(
+                      "h-8 rounded-sm px-2 text-xs font-semibold",
+                      tag === name ? "bg-white text-black" : "border border-white/30 bg-black/30 text-white/85 hover:bg-black/50",
+                    )}
+                  >
+                    #{name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <div className="mt-4 flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
+                className="border-white/30 bg-black/30 text-white hover:bg-black/50"
                 disabled={!frames.length}
                 onClick={() => setActive((i) => (i - 1 + frames.length) % frames.length)}
                 aria-label="Previous"
@@ -374,17 +385,18 @@ export function FlickrExplorer({
               <Button
                 type="button"
                 variant="outline"
+                className="border-white/30 bg-black/30 text-white hover:bg-black/50"
                 disabled={!frames.length}
                 onClick={() => setActive((i) => (i + 1) % frames.length)}
                 aria-label="Next"
               >
                 <ChevronRight className="size-4" />
               </Button>
-              <Button type="button" variant="outline" disabled={busy} onClick={() => void load(tag)}>
+              <Button type="button" variant="outline" className="border-white/30 bg-black/30 text-white hover:bg-black/50" disabled={busy} onClick={() => void load(tag)}>
                 <Dices className="size-4" />
                 {busy ? "Drawing…" : "Shuffle"}
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="border-white/30 bg-black/30 text-white hover:bg-black/50">
                 <a
                   href={current?.href ?? "https://www.flickr.com/photos/maximusmaximus/"}
                   target="_blank"

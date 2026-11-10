@@ -4,6 +4,7 @@ import { ConnectBand, ConnectButtons } from "@/components/connect-band";
 import { DafontBanner } from "@/components/dafont-banner";
 import { FontsGrokBanner } from "@/components/fonts-grok-banner";
 import { DisplayTitle } from "@/components/display-title";
+import { FitText } from "@/components/fit-text";
 import { FeedList } from "@/components/feed-list";
 import { FlickrExplorer } from "@/components/flickr-explorer";
 import { MarisolShelf } from "@/components/marisol-shelf";
@@ -43,11 +44,11 @@ function Home() {
             <p className="text-sm font-semibold uppercase tracking-wider text-muted">
               Strategy and consulting
             </p>
-            <h1 className="mt-3 font-display text-3xl leading-[0.9] sm:text-4xl">
+            <FitText as="h1" className="mt-3 font-display text-3xl leading-[0.9] sm:text-4xl">
               Max
               <br />
               Infeld
-            </h1>
+            </FitText>
             <p className="mt-2 text-xs font-semibold uppercase tracking-wider text-subtle">
               San Francisco · Chico · Public practice
             </p>
@@ -102,10 +103,10 @@ function Home() {
             <li key={p.to}>
               <Link
                 to={p.to}
-                className="group flex h-full flex-col rounded-xl border border-border bg-surface p-4 transition-colors duration-150 hover:border-line sm:p-6"
+                className="@container group flex h-full min-w-0 flex-col rounded-xl border border-border bg-surface p-4 transition-colors duration-150 hover:border-line sm:p-6"
               >
                 <span className="font-mono text-xs text-subtle">{p.kicker}</span>
-                <h2 className="mt-3 font-display text-2xl tracking-tight sm:mt-4 sm:text-3xl">{p.title}</h2>
+                <DisplayTitle className="mt-3 text-[clamp(1.35rem,16cqi,var(--text-3xl))] tracking-tight sm:mt-4">{p.title}</DisplayTitle>
                 <p className="mt-3 line-clamp-2 flex-1 text-sm text-muted sm:line-clamp-none">{p.lede}</p>
                 <span className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-fg sm:mt-6">
                   Enter
@@ -148,7 +149,7 @@ function Home() {
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-wider text-subtle">Now</p>
-            <h2 className="mt-2 font-display text-2xl tracking-tight sm:text-3xl">Latest from public sources</h2>
+            <DisplayTitle className="mt-2 text-2xl tracking-tight sm:text-3xl">Latest from public sources</DisplayTitle>
           </div>
           <Link to="/feed" className="hidden text-sm text-muted hover:text-fg sm:inline">
             Full live feed

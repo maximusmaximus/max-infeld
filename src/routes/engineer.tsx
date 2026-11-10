@@ -114,9 +114,9 @@ function Engineer() {
 
 function Role({ year, title, body }: { year: string; title: string; body: string }) {
   return (
-    <article className="rounded-xl border border-border bg-surface p-5">
+    <article className="@container min-w-0 rounded-xl border border-border bg-surface p-5">
       <p className="font-mono text-xs uppercase tracking-wider text-subtle">{year}</p>
-      <h2 className={cn("mt-3 text-2xl tracking-tight", displayFontClass(title))}>{title}</h2>
+      <DisplayTitle className="mt-3 text-2xl tracking-tight">{title}</DisplayTitle>
       <p className="mt-3 line-clamp-3 text-sm text-muted sm:line-clamp-none">{body}</p>
     </article>
   );

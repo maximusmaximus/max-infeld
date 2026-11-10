@@ -15,6 +15,7 @@ export function FontsGrokBanner({ framed }: { framed?: boolean }) {
 
   return (
     <section
+      data-project-banner="fonts"
       className={cn(
         "overflow-hidden bg-surface",
         framed ? "rounded-xl border border-border" : "border-y border-border",

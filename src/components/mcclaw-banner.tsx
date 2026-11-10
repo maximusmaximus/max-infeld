@@ -8,6 +8,7 @@ export function McclawBanner({ framed, badge }: { framed?: boolean; badge?: Reac
       href="https://mcclaw.io/"
       target="_blank"
       rel="noreferrer"
+      data-project-banner="mcclaw"
       className={cn(
         "group relative block overflow-hidden bg-black",
         framed ? "rounded-xl border border-border" : "border-y border-border",
