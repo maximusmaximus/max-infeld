@@ -3,9 +3,8 @@ import { formatDistanceToNow } from "date-fns";
 import { ConnectButtons } from "@/components/connect-band";
 import { DisplayTitle } from "@/components/display-title";
 import { FeedList } from "@/components/feed-list";
-import { ProjectBanner } from "@/components/project-banners";
+import { ProjectBanners } from "@/components/project-banners";
 import { AlienWorldsBanner } from "@/components/alien-worlds-banner";
-import { GrokWorksBanners } from "@/components/grok-works-banners";
 import { GithubBanner } from "@/components/github-banner";
 import { getLiveFeed } from "@/lib/live";
 import { displayFontClass, cn } from "@/lib/utils";
@@ -53,9 +52,14 @@ function Engineer() {
       <div className="-mx-4 mt-12 sm:-mx-6">
         <AlienWorldsBanner />
       </div>
-      <ProjectBanner id="mcclaw" />
-      <ProjectBanner id="culty" />
-      <GrokWorksBanners framed />
+      <section className="mt-12">
+        <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Live tools</p>
+        <ProjectBanners section="tools-agents" framed />
+      </section>
+      <section className="mt-12">
+        <p className="mb-6 font-mono text-xs uppercase tracking-wider text-subtle">Other sites</p>
+        <ProjectBanners section="other-sites" framed />
+      </section>
       <div className="mt-6">
         <GithubBanner framed />
       </div>

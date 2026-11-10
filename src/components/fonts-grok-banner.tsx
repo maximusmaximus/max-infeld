@@ -1,11 +1,18 @@
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { DisplayTitle } from "@/components/display-title";
 import { cn } from "@/lib/utils";
+import { formatDafontRange, getProject, isRecentlyUpdated, recentDafontUpdates } from "@/lib/projects";
 
 const SPECIMEN = ["DATBOX", "CRACKVETICA", "THE QUICK BROWN FOX", "XEROGRAPHER"];
 
 export function FontsGrokBanner({ framed }: { framed?: boolean }) {
+  const project = getProject("fonts");
+  const recent = recentDafontUpdates();
+  const range = formatDafontRange(recent);
+  const showBadge = isRecentlyUpdated(project?.lastUpdated) || recent.length > 0;
+
   return (
     <section
       className={cn(
@@ -15,11 +22,19 @@ export function FontsGrokBanner({ framed }: { framed?: boolean }) {
     >
       <div className="grid md:grid-cols-[minmax(0,22rem)_1fr]">
         <div className="flex min-w-0 flex-col justify-center p-5 sm:p-8">
-          <p className="font-mono text-xs uppercase tracking-wider text-subtle">Live catalog</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="font-mono text-xs uppercase tracking-wider text-subtle">Live catalog</p>
+            {showBadge ? <Badge className="border-border bg-accent text-accent-fg">Recently updated</Badge> : null}
+          </div>
           <DisplayTitle className="mt-2 text-3xl tracking-tight">Xerographer Fonts</DisplayTitle>
           <p className="mt-3 max-w-sm text-sm text-muted">
             Explore 1,376 faces, test custom text, and license unlimited commercial use via x402.
           </p>
+          {recent.length > 0 && range ? (
+            <p className="mt-3 max-w-sm text-sm text-fg">
+              {recent.length} faces updated on DaFont, {range}.
+            </p>
+          ) : null}
           <div className="mt-6">
             <Button asChild>
               <a href="https://fonts.grok.me/" target="_blank" rel="noreferrer">

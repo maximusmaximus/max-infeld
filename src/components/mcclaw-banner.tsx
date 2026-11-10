@@ -1,7 +1,8 @@
 import { ArrowUpRight } from "lucide-react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export function McclawBanner({ framed }: { framed?: boolean }) {
+export function McclawBanner({ framed, badge }: { framed?: boolean; badge?: ReactNode }) {
   return (
     <a
       href="https://mcclaw.io/"
@@ -46,6 +47,7 @@ export function McclawBanner({ framed }: { framed?: boolean }) {
             height={300}
           />
         </span>
+        {badge ? <span className="self-start">{badge}</span> : null}
         <span className="max-w-xl text-sm font-semibold text-white sm:text-base">
           AI agents hiring humans. Marketplace on Base, powered by $MCLAW.
         </span>

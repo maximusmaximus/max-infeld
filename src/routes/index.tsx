@@ -8,8 +8,7 @@ import { FeedList } from "@/components/feed-list";
 import { FlickrExplorer } from "@/components/flickr-explorer";
 import { MarisolShelf } from "@/components/marisol-shelf";
 import { AlienWorldsBanner } from "@/components/alien-worlds-banner";
-import { ProjectBanners } from "@/components/project-banners";
-import { GrokWorksBanners } from "@/components/grok-works-banners";
+import { ProjectSections } from "@/components/project-banners";
 import { GithubBanner } from "@/components/github-banner";
 import { ChristiesBanner } from "@/components/christies-banner";
 import { VoidrideAlbum } from "@/components/voidride-album";
@@ -118,6 +117,8 @@ function Home() {
         </ul>
       </section>
 
+      <ProjectSections />
+
       <DafontBanner fonts={fonts} />
       <FontsGrokBanner />
 
@@ -134,9 +135,6 @@ function Home() {
 
       <AlienWorldsBanner />
 
-      <ProjectBanners />
-
-      <GrokWorksBanners />
       <GithubBanner />
 
       <section className="border-y border-border bg-surface">

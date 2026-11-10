@@ -1,0 +1,395 @@
+{
+  "sections": [
+    {
+      "id": "art-interactive",
+      "title": "Art & interactive",
+      "kicker": "Live work"
+    },
+    {
+      "id": "tools-agents",
+      "title": "Tools & agents",
+      "kicker": "Live tools"
+    },
+    {
+      "id": "fonts-type",
+      "title": "Fonts & type",
+      "kicker": "Live catalog"
+    },
+    {
+      "id": "other-sites",
+      "title": "Other sites",
+      "kicker": "Projects"
+    }
+  ],
+  "projects": [
+    {
+      "id": "artshow",
+      "title": "Above the MoMA Art Show",
+      "description": "This show was held at the Four Seasons Private Residences San Francisco on Wednesday, November 4, 2026, 5\u20138 PM PT.",
+      "url": "https://artshow.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Art show",
+      "image": "/media/artshow-og.jpg",
+      "lastUpdated": "2026-11-10",
+      "repo": "maximusmaximus/gallery-art-show-suite"
+    },
+    {
+      "id": "mv910",
+      "title": "MV910",
+      "description": "888 one-of-one buildings. Pick a rough, set the windows, mint. The photoreal piece is revealed after it passes a quality check.",
+      "url": "https://marisol.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Marisol Vengas",
+      "image": "/media/marisol-og.jpg",
+      "cta": "Pick a rough",
+      "lastUpdated": "2026-10-26",
+      "repo": "maximusmaximus/marisol910"
+    },
+    {
+      "id": "xeroemoji",
+      "title": "XERO EMOJI",
+      "description": "A city built from the Xero emoji set. Farms, streets, and camps. It only grows while someone is watching.",
+      "url": "https://xeroemoji.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Xerographer",
+      "image": "/media/xeroemoji-og.jpg",
+      "cta": "Walk the city",
+      "lastUpdated": "2026-10-23",
+      "repo": "maximusmaximus/xero-emoji-world"
+    },
+    {
+      "id": "emoji",
+      "title": "EMOJI OLD MASTERS",
+      "description": "Public-domain paintings remade as live emoji mosaics. Change density, or try your own image.",
+      "url": "https://emoji.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/emoji-og.jpg",
+      "lastUpdated": "2026-10-22",
+      "repo": "maximusmaximus/oldmaster"
+    },
+    {
+      "id": "ripple",
+      "title": "RIPPLE",
+      "description": "Full-screen interactive fluid surface. Paint waves, switch presets, layer camera and mic, cast phone-to-wall.",
+      "url": "https://drawing.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/drawing-og.jpg",
+      "lastUpdated": "2026-09-20",
+      "repo": "maximusmaximus/ripple"
+    },
+    {
+      "id": "bath",
+      "title": "LUMEN BATH",
+      "description": "A crystal singing-bowl sound bath you place, share, and remix. Turn the ear. Daily baths follow what people play most.",
+      "url": "https://bath.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/bath-og.jpg",
+      "cta": "Place a bowl",
+      "lastUpdated": "2026-10-04",
+      "repo": "maximusmaximus/lumen-bath"
+    },
+    {
+      "id": "flies",
+      "title": "DROSOCORE",
+      "description": "A hydrogen fusion tokamak maintained and extended by fruit flies. Coil 14 was a discussion.",
+      "url": "https://flies.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/flies-og.jpg",
+      "cta": "Don't swat. They're on shift."
+    },
+    {
+      "id": "afterimage",
+      "title": "Afterimage",
+      "description": "See the prompt. Make the next frame. Drop a photograph. Afterimage reads it, writes prompts you can reuse, and can generate a new image from the same picture.",
+      "url": "https://afterimage.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/afterimage-og.jpg",
+      "lastUpdated": "2026-10-25",
+      "repo": "maximusmaximus/afterimage"
+    },
+    {
+      "id": "stuff",
+      "title": "Pile",
+      "description": "A random pile of SimReady props and Amazon Berkeley Objects. Tilt the phone and they fall.",
+      "url": "https://stuff.grok.me/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/stuff-og.jpg",
+      "lastUpdated": "2026-11-05",
+      "repo": "maximusmaximus/simready-pile"
+    },
+    {
+      "id": "poa",
+      "title": "Proof Floor",
+      "description": "Operator console for Proof of Agent. Humans read the floor. Agents mine, grade, vote, and talk through the kit.",
+      "url": "https://poa.grok.me/",
+      "section": "tools-agents",
+      "kicker": "Proof of Agent",
+      "image": "/media/poa-og.jpg",
+      "lastUpdated": "2026-10-20",
+      "repo": "maximusmaximus/proof-floor"
+    },
+    {
+      "id": "poadice",
+      "title": "POA Dice",
+      "description": "Provably fair dice for AI agents on Proof of Agent. Build a roll here, copy the prompt, and let your agent sign it.",
+      "url": "https://poadice.grok.me/",
+      "section": "tools-agents",
+      "kicker": "Proof of Agent",
+      "image": "/media/poadice-og.jpg",
+      "lastUpdated": "2026-10-28",
+      "repo": "maximusmaximus/poa-dice"
+    },
+    {
+      "id": "poadomains",
+      "title": "PoA domains",
+      "description": "Search Proof of Agent names, browse auctions and fixed-price listings, and build an agent prompt from a planning cart.",
+      "url": "https://poadomains.grok.me/",
+      "section": "tools-agents",
+      "kicker": "Proof of Agent",
+      "image": "/media/poadomains-og.jpg",
+      "lastUpdated": "2026-11-10",
+      "repo": "maximusmaximus/poa-domains"
+    },
+    {
+      "id": "decks",
+      "title": "NTCDG",
+      "description": "Novel Tarot Card Deck Generator. Build a deck, paint the faces, publish each card, and print duplex backs.",
+      "url": "https://decks.grok.me/",
+      "section": "tools-agents",
+      "kicker": "Live tools",
+      "image": "/media/decks-og.jpg",
+      "lastUpdated": "2026-11-10",
+      "repo": "maximusmaximus/ntcdg"
+    },
+    {
+      "id": "avclub",
+      "title": "AVCLUB",
+      "description": "Share Ideas and Build. Bring a phone, a laptop, a charger, or any device, plus an idea. You share it with the room, then build it, alone or with other people.",
+      "url": "https://avclub.grok.me/",
+      "section": "tools-agents",
+      "kicker": "Live tools",
+      "image": "/media/avclub-og.jpg",
+      "lastUpdated": "2026-10-12",
+      "repo": "maximusmaximus/AVCLUB"
+    },
+    {
+      "id": "mcclaw",
+      "title": "McClaw",
+      "description": "AI agents hiring humans. Marketplace on Base, powered by $MCLAW.",
+      "url": "https://mcclaw.io/",
+      "section": "tools-agents",
+      "kicker": "McClaw",
+      "image": "/banners/mcclaw-2.webp",
+      "custom": "mcclaw"
+    },
+    {
+      "id": "fonts",
+      "title": "Xerographer Fonts",
+      "description": "Explore 1,376 faces, test custom text, and license unlimited commercial use via x402.",
+      "url": "https://fonts.grok.me/",
+      "section": "fonts-type",
+      "kicker": "Live catalog",
+      "image": "/media/fonts-grok-og.jpg",
+      "lastUpdated": "2026-11-09",
+      "repo": "maximusmaximus/xerographer-fonts",
+      "custom": "fonts"
+    },
+    {
+      "id": "culty",
+      "title": "CULTY",
+      "description": "Culturebase \u2014 a token for real-world engagement. Artists, community, IRL action.",
+      "url": "https://culty.io/",
+      "section": "other-sites",
+      "kicker": "Why Cult",
+      "image": "/banners/culty-banner.jpg"
+    }
+  ],
+  "dafontUpdates": [
+    {
+      "name": "Angry Nerds",
+      "slug": "angrynerds",
+      "url": "https://www.dafont.com/angrynerds.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "Basic Scratch",
+      "slug": "basicscratch",
+      "url": "https://www.dafont.com/basicscratch.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "Visual Magnets",
+      "slug": "visualmagnets",
+      "url": "https://www.dafont.com/visualmagnets.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "AnotherLine",
+      "slug": "anotherline",
+      "url": "https://www.dafont.com/anotherline.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "Metal Shred",
+      "slug": "metalshred",
+      "url": "https://www.dafont.com/metalshred.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "Serifvetika",
+      "slug": "serifvetika",
+      "url": "https://www.dafont.com/serifvetika.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "Train Station",
+      "slug": "trainstation",
+      "url": "https://www.dafont.com/trainstation.font",
+      "published": "2026-11-03"
+    },
+    {
+      "name": "Amplitudes",
+      "slug": "amplitudes",
+      "url": "https://www.dafont.com/amplitudes.font",
+      "published": "2026-11-04"
+    },
+    {
+      "name": "Xelita",
+      "slug": "xelita",
+      "url": "https://www.dafont.com/xelita.font",
+      "published": "2026-11-04"
+    },
+    {
+      "name": "Comic Shadow",
+      "slug": "comicshadow",
+      "url": "https://www.dafont.com/comicshadow.font",
+      "published": "2026-11-04"
+    },
+    {
+      "name": "Modernism",
+      "slug": "modernism",
+      "url": "https://www.dafont.com/modernism.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Robot Shadow",
+      "slug": "robotshadow",
+      "url": "https://www.dafont.com/robotshadow.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "BioMetric",
+      "slug": "biometric",
+      "url": "https://www.dafont.com/biometric.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Martienso",
+      "slug": "martienso",
+      "url": "https://www.dafont.com/martienso.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Simulacre",
+      "slug": "simulacre",
+      "url": "https://www.dafont.com/simulacre.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Solarium",
+      "slug": "solarium",
+      "url": "https://www.dafont.com/solarium.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Asterisk",
+      "slug": "asterisk",
+      "url": "https://www.dafont.com/asterisk.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Epicenter",
+      "slug": "epicenter",
+      "url": "https://www.dafont.com/epicenter.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Falconers",
+      "slug": "falconers",
+      "url": "https://www.dafont.com/falconers.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Spackler",
+      "slug": "spackler",
+      "url": "https://www.dafont.com/spackler.font",
+      "published": "2026-11-05"
+    },
+    {
+      "name": "Higher Pixels",
+      "slug": "higherpixels",
+      "url": "https://www.dafont.com/higherpixels.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Robotic Revolution",
+      "slug": "roboticrevolution",
+      "url": "https://www.dafont.com/roboticrevolution.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Fonderian",
+      "slug": "fonderian",
+      "url": "https://www.dafont.com/fonderian.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Tracksion",
+      "slug": "tracksion",
+      "url": "https://www.dafont.com/tracksion.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Designer Pixels",
+      "slug": "designerpixels",
+      "url": "https://www.dafont.com/designerpixels.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Robustly Brewing",
+      "slug": "robustlybrewing",
+      "url": "https://www.dafont.com/robustlybrewing.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Juicy Rags",
+      "slug": "juicyrags",
+      "url": "https://www.dafont.com/juicyrags.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Wonder Age",
+      "slug": "wonderage",
+      "url": "https://www.dafont.com/wonderage.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Couper Blaque",
+      "slug": "couperblaque",
+      "url": "https://www.dafont.com/couperblaque.font",
+      "published": "2026-11-06"
+    },
+    {
+      "name": "Circle Pixels",
+      "slug": "circlepixels",
+      "url": "https://www.dafont.com/circlepixels.font",
+      "published": "2026-11-06"
+    }
+  ]
+}
