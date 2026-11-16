@@ -25,7 +25,7 @@
     {
       "id": "artshow",
       "title": "Above the MoMA Art Show",
-      "description": "This show was held at the Four Seasons Private Residences San Francisco on Wednesday, November 4, 2026, 5\u20138 PM PT.",
+      "description": "This show was held at the Four Seasons Private Residences San Francisco on Wednesday, November 4, 2026, 5–8 PM PT.",
       "url": "https://artshow.grok.me/",
       "section": "art-interactive",
       "kicker": "Art show",
@@ -142,7 +142,7 @@
       "section": "tools-agents",
       "kicker": "Proof of Agent",
       "image": "/media/poadice-og.jpg",
-      "lastUpdated": "2026-10-28",
+      "lastUpdated": "2026-11-13",
       "repo": "maximusmaximus/poa-dice"
     },
     {
@@ -153,7 +153,7 @@
       "section": "tools-agents",
       "kicker": "Proof of Agent",
       "image": "/media/poadomains-og.jpg",
-      "lastUpdated": "2026-11-10",
+      "lastUpdated": "2026-11-14",
       "repo": "maximusmaximus/poa-domains"
     },
     {
@@ -196,14 +196,14 @@
       "section": "fonts-type",
       "kicker": "Live catalog",
       "image": "/media/fonts-grok-og.jpg",
-      "lastUpdated": "2026-11-09",
+      "lastUpdated": "2026-11-15",
       "repo": "maximusmaximus/xerographer-fonts",
       "custom": "fonts"
     },
     {
       "id": "culty",
       "title": "CULTY",
-      "description": "Culturebase \u2014 a token for real-world engagement. Artists, community, IRL action.",
+      "description": "Culturebase — a token for real-world engagement. Artists, community, IRL action.",
       "url": "https://culty.io/",
       "section": "other-sites",
       "kicker": "Why Cult",
