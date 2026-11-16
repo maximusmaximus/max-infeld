@@ -124,6 +124,18 @@
       "repo": "maximusmaximus/simready-pile"
     },
     {
+      "id": "graffiland",
+      "title": "GRAFFILAND",
+      "description": "Location-bound 3D voxel graffiti. Sculpt on your phone, pin it to a real place on the map, and claim virtual land on Robinhood Chain.",
+      "url": "https://maximusmaximus.github.io/graffiland/",
+      "section": "art-interactive",
+      "kicker": "Live work",
+      "image": "/media/graffiland-og.jpg",
+      "cta": "Open the map",
+      "lastUpdated": "2026-11-12",
+      "repo": "maximusmaximus/graffiland"
+    },
+    {
       "id": "poa",
       "title": "Proof Floor",
       "description": "Operator console for Proof of Agent. Humans read the floor. Agents mine, grade, vote, and talk through the kit.",
