@@ -30,7 +30,7 @@
       "section": "art-interactive",
       "kicker": "Art show",
       "image": "/media/artshow-og.jpg",
-      "lastUpdated": "2026-11-10",
+      "lastUpdated": "2026-11-16",
       "repo": "maximusmaximus/gallery-art-show-suite"
     },
     {
@@ -132,7 +132,7 @@
       "kicker": "Live work",
       "image": "/media/graffiland-og.jpg",
       "cta": "Open the map",
-      "lastUpdated": "2026-11-12",
+      "lastUpdated": "2026-11-23",
       "repo": "maximusmaximus/graffiland"
     },
     {
@@ -154,7 +154,7 @@
       "section": "tools-agents",
       "kicker": "Proof of Agent",
       "image": "/media/poadice-og.jpg",
-      "lastUpdated": "2026-11-13",
+      "lastUpdated": "2026-11-20",
       "repo": "maximusmaximus/poa-dice"
     },
     {
@@ -165,7 +165,7 @@
       "section": "tools-agents",
       "kicker": "Proof of Agent",
       "image": "/media/poadomains-og.jpg",
-      "lastUpdated": "2026-11-14",
+      "lastUpdated": "2026-11-23",
       "repo": "maximusmaximus/poa-domains"
     },
     {
@@ -208,7 +208,7 @@
       "section": "fonts-type",
       "kicker": "Live catalog",
       "image": "/media/fonts-grok-og.jpg",
-      "lastUpdated": "2026-11-15",
+      "lastUpdated": "2026-11-20",
       "repo": "maximusmaximus/xerographer-fonts",
       "custom": "fonts"
     },
@@ -220,6 +220,26 @@
       "section": "other-sites",
       "kicker": "Why Cult",
       "image": "/banners/culty-banner.jpg"
+    },
+    {
+      "id": "agentic-model-matrix",
+      "title": "Agentic Model Matrix",
+      "description": "CI-automated coding best practices and a 6-stage SDLC model routing matrix, with live source health, stats and change history.",
+      "url": "https://maximusmaximus.github.io/agentic-model-matrix/",
+      "section": "tools-agents",
+      "kicker": "Live tool",
+      "lastUpdated": "2026-11-23",
+      "repo": "maximusmaximus/agentic-model-matrix"
+    },
+    {
+      "id": "poa-keygen",
+      "title": "PoA Key Generator",
+      "description": "Offline Proof of Agent ed25519 key pair generator. Makes no network requests.",
+      "url": "https://maximusmaximus.github.io/poa-keygen/",
+      "section": "tools-agents",
+      "kicker": "Proof of Agent",
+      "lastUpdated": "2026-10-25",
+      "repo": "maximusmaximus/poa-keygen"
     }
   ],
   "dafontUpdates": [
