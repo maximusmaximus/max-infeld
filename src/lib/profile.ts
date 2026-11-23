@@ -6,6 +6,7 @@ export const MAILTO_URL = `mailto:${EMAIL}?subject=${encodeURIComponent("Commerc
 export const FONT_PROFILES = [
   { name: "fonts.grok.me", href: "https://fonts.grok.me/" },
   { name: "DaFont", href: "https://www.dafont.com/max-infeld.d3584" },
+  { name: "Ko-fi", href: "https://ko-fi.com/xerographerfonts" },
   { name: "Fontspace", href: "https://www.fontspace.com/xerographer-fonts" },
   { name: "1001 Fonts", href: "https://www.1001fonts.com/search.html?search=xerographer" },
   { name: "Abstract Fonts", href: "https://www.abstractfonts.com/search/?q=xerographer" },
@@ -181,6 +182,14 @@ export const SOCIALS: SocialLink[] = [
     handle: "Xerographer Fonts",
     href: "https://www.dafont.com/max-infeld.d3584",
     blurb: "Download on DaFont. Contact for commercial use licensing.",
+    group: "type",
+  },
+  {
+    id: "kofi",
+    name: "Ko-fi",
+    handle: "xerographerfonts",
+    href: "https://ko-fi.com/xerographerfonts",
+    blurb: "Tip the studio at ko-fi.com/xerographerfonts.",
     group: "type",
   },
   {
