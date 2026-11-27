@@ -161,11 +161,11 @@
       "id": "poadomains",
       "title": "PoA domains",
       "description": "Search Proof of Agent names, browse auctions and fixed-price listings, and build an agent prompt from a planning cart.",
-      "url": "https://poadomains.grok.me/",
+      "url": "https://poadomains.link/",
       "section": "tools-agents",
       "kicker": "Proof of Agent",
       "image": "/media/poadomains-og.jpg",
-      "lastUpdated": "2026-11-23",
+      "lastUpdated": "2026-11-27",
       "repo": "maximusmaximus/poa-domains"
     },
     {
